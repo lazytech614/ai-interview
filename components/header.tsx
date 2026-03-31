@@ -5,6 +5,7 @@ import Image from "next/image"
 import { checkUser } from "@/lib/check.user"
 import { Calendar1Icon, Users } from "lucide-react"
 import CreditButton from "./credit-button"
+import RoleRedirect from "./role-redirect"
 
 const Header = async () => {
     const user = await checkUser()
@@ -21,6 +22,10 @@ const Header = async () => {
                 className="h-11 w-auto"
             />
         </Link>
+
+        {/* REDIRECTION LOGIC  */}
+        {user && <RoleRedirect role={user.role} />}
+
         <div className="flex items-center gap-x-3">
             <Show when="signed-out">
                 <SignInButton mode="modal">

@@ -1,4 +1,5 @@
 import { GoldTitle, GrayTitle } from "@/components/reusables";
+import { InterviewCategory } from "./generated/prisma/enums";
 
 export const LOGOS = [
   { src: "/amazon.svg", alt: "Amazon" },
@@ -120,7 +121,10 @@ export const ROLES = [
   },
 ];
 
-export const CATEGORIES = [
+export const CATEGORIES: {
+  value: InterviewCategory | null;
+  label: string;
+}[] = [
   { value: null, label: "All" },
   { value: "FRONTEND", label: "Frontend" },
   { value: "BACKEND", label: "Backend" },
