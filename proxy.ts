@@ -10,6 +10,10 @@ const isProtectedRoute = createRouteMatcher([
   "/dashboard(.*)",
 ])
 
+const isWebhookRoute = createRouteMatcher([
+  "/api/webhooks/stream(.*)"
+])
+
 const aj = arcjet({
   key: process.env.ARCJET_KEY!,
   rules: [
@@ -28,9 +32,11 @@ const aj = arcjet({
 
 export default clerkMiddleware(async (auth, req) => {
 
-  const decesion = await aj.protect(req)
+  if(!isWebhookRoute(req)) {
+    const decesion = await aj.protect(req)
 
-  if(decesion.isDenied()) return NextResponse.json({error: "Forbidden"}, {status: 403})
+    if(decesion.isDenied()) return NextResponse.json({error: "Forbidden"}, {status: 403})
+  } 
 
   const {userId} = await auth()
 
