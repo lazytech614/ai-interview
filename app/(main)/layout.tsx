@@ -1,6 +1,6 @@
 const MainLayout = ({children}: any) => {
   return (
-    <div className="container mx-auto my-32">
+    <div className="my-16">
         {children}
     </div>
   )
