@@ -11,11 +11,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { useRouter } from "next/navigation";
 import useFetch from "@/hooks/use-fetch";
 import { completeOnboarding } from "@/actions/onboarding";
+import { toast } from "sonner";
 
 const OnboardingPage = () => {
 
     const router = useRouter()
-    const {data, loading, fn: onBoardingFn} = useFetch(completeOnboarding)
+    const {
+            data, 
+            loading, 
+            fn: onBoardingFn
+        } = useFetch(completeOnboarding)
 
     const [role, setRole] = useState("")
     const [form, setForm] = useState({
@@ -26,7 +31,13 @@ const OnboardingPage = () => {
         categories: [] as InterviewCategory[]
     })
 
-    const canSubmit = role === "INTERVIEWEE" || (role === "INTERVIEWER" && form.title.trim() && form.company.trim() && form.yearsExp && form.bio.trim() && form.categories.length>0)
+    const canSubmit = role === "INTERVIEWEE" 
+                        || (role === "INTERVIEWER" 
+                            && form.title.trim() 
+                            && form.company.trim() 
+                            && form.yearsExp 
+                            && form.bio.trim() 
+                            && form.categories.length>0)
     
     
     const toggleCategory = (category: any) => {
@@ -43,24 +54,37 @@ const OnboardingPage = () => {
         }
     }
 
-    const handleSubmit = (e: any) => {
+    const handleSubmit = () => {
         if(!canSubmit) return
 
-        onBoardingFn({
-            role,
-            ...(role === "INTERVIEWER" && {
-                title: form.title,
-                company: form.company,
-                yearsExp: form.yearsExp,
-                bio: form.bio,
-                categories: form.categories
+        try {
+            onBoardingFn({
+                role,
+                ...(role === "INTERVIEWER" && {
+                    title: form.title,
+                    company: form.company,
+                    yearsExp: form.yearsExp,
+                    bio: form.bio,
+                    categories: form.categories
+                })
             })
-        })
+        }catch(err) {
+            toast.error("Something went wrong")
+            console.error("SOMETHING WENT WRONG ON ONBOARDING", err)
+        }
     }
 
     useEffect(() => {
-        if(data && !loading) router.push(role === "INTERVIEWER" ? "/dashboard" : "/explore")
-    }, [data, router])
+        if(data && !loading) {
+            toast.success("Onboarding successful")
+            
+            if(role === "INTERVIEWER") {
+                window.location.href = "/dashboard" 
+            } else {
+                router.replace("/explore")
+            }
+        }
+    }, [data, loading, role, router])
 
   return (
     <div className="min-h-screen px-6 flex flex-col items-center">
