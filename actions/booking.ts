@@ -1,6 +1,6 @@
 "use server";
 
-import { BookSlotResponse } from "@/components/slot-picker";
+import { BookSlotResponse } from "@/components/interviewers/slot-picker";
 import { checkRateLimit, createRateLimitor } from "@/lib/arcjet";
 import prisma from "@/lib/prisma";
 import { request } from "@arcjet/next";
