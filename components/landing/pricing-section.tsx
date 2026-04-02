@@ -24,7 +24,7 @@ export default function PricingSection() {
     : null;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+    <div id="pricing" className="grid grid-cols-1 md:grid-cols-3 gap-5">
       {PLANS.map((plan) => {
         const isActive = activePlanSlug === plan.slug;
 

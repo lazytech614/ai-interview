@@ -12,7 +12,7 @@ export default function NotFound() {
   return (
     <main className="min-h-screen bg-[#0A0A0F] text-[#F0EDE8] flex flex-col items-center justify-center px-6 text-center">
       {/* Big number */}
-      <p className="font-serif text-[120px] text-[#C8F04A]/15 leading-none tracking-[-4px] select-none">
+      <p className="font-serif text-[120px] text-amber-400/20 leading-none tracking-[-4px] select-none">
         404
       </p>
 
@@ -20,7 +20,7 @@ export default function NotFound() {
         This page took the wrong exit
       </h2>
 
-      <p className="text-[14.5px] text-[#B0ADB8] leading-[1.8] max-w-[420px] mb-8">
+      <p className="text-[14.5px] text-[#B0ADB8] leading-[1.8] max-w-105 mb-8">
         The page you&apos;re looking for has moved, been deleted, or never existed.
         Let&apos;s get you back on track.
       </p>
@@ -29,7 +29,7 @@ export default function NotFound() {
       <div className="flex gap-3 flex-wrap justify-center mb-14">
         <Link
           href="/"
-          className="bg-[#C8F04A] text-[#0A0A0F] font-medium text-[13.5px] px-5 py-2.5 rounded-lg hover:opacity-90 transition-opacity"
+          className="bg-amber-400 text-[#0A0A0F] font-medium text-[13.5px] px-5 py-2.5 rounded-lg hover:opacity-90 transition-opacity"
         >
           Go home →
         </Link>
@@ -57,7 +57,7 @@ export default function NotFound() {
             <Link
               key={s.href}
               href={s.href}
-              className="bg-white/[0.04] border border-white/8 rounded-full px-4 py-1.5 text-[13px] text-[#C4C1CC] hover:border-white/18 hover:text-[#F0EDE8] transition-all"
+              className="bg-white/4 border border-white/8 rounded-full px-4 py-1.5 text-[13px] text-[#C4C1CC] hover:border-white/18 hover:text-[#F0EDE8] transition-all"
             >
               {s.label}
             </Link>

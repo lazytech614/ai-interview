@@ -13,7 +13,7 @@ const footerLinks = {
   company: [
     { label: "About Us", href: "/about" },
     { label: "Blog", href: "/blog" },
-    { label: "Careers", href: "/careers", badge: "2 open" },
+    { label: "Careers", href: "/careers", badge: "3 open" },
     { label: "Press Kit", href: "/press" },
     { label: "Contact", href: "/contact" },
   ],
@@ -30,9 +30,9 @@ export default function Footer() {
     <footer className="bg-[#07070B] border-t border-white/20 font-sans pt-16">
       <div className="max-w-350 mx-auto px-4 sm:px-8">
         {/* Top Grid */}
-        <div className="grid grid-cols-4 gap-12 pb-14 border-b border-white/8">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-12 pb-14 border-b border-white/8">
           {/* Brand Column */}
-          <div className="col-span-1">
+          <div className="col-span-2 sm:col-span-1 flex flex-col items-center justify-center text-center sm:block sm:text-left">
             <Link href="/">
                 <Image 
                     src="/logo.png" 
@@ -111,7 +111,7 @@ export default function Footer() {
           </div>
 
           {/* Legal + CTA */}
-          <div>
+          <div className="col-span-2 sm:col-span-1">
             <h5 className="text-[11px] font-medium uppercase tracking-widest text-[#8A8790] mb-4">
               Legal
             </h5>
@@ -150,7 +150,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="flex items-center justify-between py-5 flex-wrap gap-3">
+        <div className="flex flex-col-reverse sm:flex-row items-center justify-between py-5 flex-wrap gap-3">
           <p className="text-[12.5px] text-[#8A8790]">
             © {new Date().getFullYear()} Prept · Made with ♥ by{" "}
             <a
@@ -172,7 +172,8 @@ export default function Footer() {
               { label: "Privacy", href: "/privacy" },
               { label: "Terms", href: "/terms" },
               { label: "Cookies", href: "/cookies" },
-              { label: "Status", href: "https://status.prept.io" },
+              { label: "Refund", href: "/refund" },
+              // { label: "Status", href: "https://status.prept.io" },
             ].map((link) => (
               <Link
                 key={link.href}

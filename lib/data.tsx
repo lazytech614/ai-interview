@@ -245,3 +245,335 @@ export const EXPECT_ITEMS = [
     "A shareable recording link is generated automatically after the call.",
   ],
 ];
+
+export const BLOG_POST = [
+  {
+    slug: "system-design-mastery",
+    title: "Mastering System Design Interviews at FAANG",
+    author: "Aman Verma",
+    date: "March 10, 2026",
+    readTime: "8 min read",
+    image: "/placeholder_image.webp",
+    excerpt: "A complete roadmap to crack system design interviews with confidence.",
+    content: `System design interviews are one of the most challenging rounds in top tech companies like FAANG.
+
+Unlike coding interviews, system design evaluates how you think, structure problems, and design scalable systems.
+
+The first step is always requirement clarification. Ask questions about scale, users, and constraints.
+
+Next, define a high-level architecture. Use components like load balancers, APIs, databases, and caching layers.
+
+Always justify your choices. For example, why are you using Redis? Why not SQL?
+
+Discuss scaling strategies such as horizontal scaling, database sharding, and replication.
+
+A strong candidate also considers edge cases like failures, downtime, and data consistency.
+
+Real-world example: Designing Instagram feed involves feed generation, ranking, and caching strategies.
+
+Communication is key. Think aloud so the interviewer understands your approach.
+
+Avoid overengineering. Start simple and evolve the design gradually.
+
+Practice regularly using platforms and mock interviews to build confidence.
+
+With consistent effort, system design becomes intuitive and even enjoyable.`
+  },
+
+  {
+    slug: "coding-mistakes",
+    title: "Top 5 Coding Mistakes That Kill Your Interview",
+    author: "Priya Sharma",
+    date: "February 25, 2026",
+    readTime: "5 min read",
+    image: "/placeholder_image.webp",
+    excerpt: "Avoid common pitfalls developers make during coding interviews.",
+    content: `Many candidates fail coding interviews not because they lack knowledge, but due to avoidable mistakes.
+
+One major mistake is not understanding the problem properly before coding.
+
+Jumping into coding without planning often leads to messy and incorrect solutions.
+
+Another common issue is ignoring edge cases such as empty inputs or large constraints.
+
+Poor variable naming can make your code difficult to understand and explain.
+
+Candidates also forget to optimize their solutions, sticking with brute-force approaches.
+
+Time complexity discussion is crucial and often overlooked.
+
+Not testing your code with sample inputs is another critical error.
+
+Communication plays a huge role — explain your logic clearly.
+
+Break down the problem into smaller steps before implementing.
+
+Practice writing clean and readable code under time pressure.
+
+Fixing these small mistakes can significantly improve your performance.`
+  },
+
+  {
+    slug: "ai-interviews",
+    title: "AI is Changing Interviews: Are You Ready?",
+    author: "Rohit Singh",
+    date: "February 10, 2026",
+    readTime: "6 min read",
+    image: "/placeholder_image.webp",
+    excerpt: "AI tools are reshaping hiring. Learn how to adapt.",
+    content: `Artificial Intelligence is rapidly transforming the hiring process across industries.
+
+Many companies now allow or even expect candidates to use AI tools during interviews.
+
+This shifts the focus from memorization to problem-solving and understanding.
+
+You must build strong fundamentals in data structures and system design.
+
+AI can assist, but it cannot replace core knowledge and reasoning ability.
+
+Companies are also using AI-based assessments to evaluate candidates.
+
+Understanding how to collaborate with AI tools is becoming a valuable skill.
+
+Ethical usage is important — misuse can harm your credibility.
+
+Practice solving problems both with and without AI assistance.
+
+Focus on explaining your thought process rather than just giving answers.
+
+Stay updated with trends in AI-driven hiring practices.
+
+Adapting early will give you a strong competitive advantage.`
+  },
+
+  {
+    slug: "dsa-roadmap",
+    title: "Complete DSA Roadmap for Beginners",
+    author: "Sneha Gupta",
+    date: "Jan 20, 2026",
+    readTime: "10 min read",
+    image: "/placeholder_image.webp",
+    excerpt: "Step-by-step DSA roadmap for cracking coding interviews.",
+    content: `Starting Data Structures and Algorithms can feel overwhelming for beginners.
+
+The key is to follow a structured roadmap instead of random practice.
+
+Begin with arrays and strings to understand basic problem-solving patterns.
+
+Move on to linked lists, stacks, and queues to build foundational knowledge.
+
+Trees and graphs are crucial topics that frequently appear in interviews.
+
+Practice recursion and backtracking for complex problem-solving.
+
+Dynamic programming is challenging but extremely important.
+
+Consistency matters more than speed. Solve problems daily.
+
+Use platforms like LeetCode, Codeforces, and GeeksforGeeks.
+
+Revise concepts regularly to retain knowledge.
+
+Participate in contests to improve time management skills.
+
+With patience and persistence, DSA becomes much easier over time.`
+  },
+
+  {
+    slug: "resume-tips",
+    title: "Resume Tips That Get You Shortlisted",
+    author: "Ankit Jain",
+    date: "Jan 10, 2026",
+    readTime: "4 min read",
+    image: "/placeholder_image.webp",
+    excerpt: "Make your resume stand out to recruiters instantly.",
+    content: `Your resume is the first impression you make on recruiters.
+
+A well-structured resume can significantly increase your chances of getting shortlisted.
+
+Keep your resume concise — ideally one page for freshers.
+
+Use strong action verbs like "Built", "Designed", and "Optimized".
+
+Quantify your impact wherever possible using numbers.
+
+Highlight relevant projects that demonstrate your skills.
+
+Avoid unnecessary details and focus on what matters.
+
+Use clean formatting with proper spacing and alignment.
+
+Tailor your resume for each job role you apply for.
+
+Proofread carefully to avoid grammatical errors.
+
+Use keywords from the job description to pass ATS filters.
+
+A strong resume opens doors to great opportunities.`
+  },
+
+  {
+    slug: "backend-scaling",
+    title: "Scaling Backend Systems Like a Pro",
+    author: "Ravi Kumar",
+    date: "Dec 28, 2025",
+    readTime: "7 min read",
+    image: "/placeholder_image.webp",
+    excerpt: "Learn how to scale systems to millions of users.",
+    content: `Scaling backend systems is essential for handling large user bases.
+
+Start by identifying bottlenecks in your current architecture.
+
+Use load balancers to distribute traffic efficiently.
+
+Implement caching using tools like Redis to reduce database load.
+
+Database scaling can be achieved using sharding and replication.
+
+Horizontal scaling is preferred over vertical scaling in most cases.
+
+Use CDNs to serve static content faster to users globally.
+
+Monitor system performance using tools like Prometheus.
+
+Failover strategies are important to ensure high availability.
+
+Design systems to handle sudden traffic spikes gracefully.
+
+Security and data consistency should not be compromised.
+
+A well-scaled backend ensures a smooth user experience.`
+  },
+
+  {
+    slug: "frontend-performance",
+    title: "Frontend Performance Optimization Guide",
+    author: "Neha Kapoor",
+    date: "Dec 15, 2025",
+    readTime: "6 min read",
+    image: "/placeholder_image.webp",
+    excerpt: "Speed up your frontend apps dramatically.",
+    content: `Frontend performance plays a critical role in user experience.
+
+Slow websites lead to higher bounce rates and poor engagement.
+
+Optimize images by compressing and using modern formats like WebP.
+
+Implement lazy loading for images and components.
+
+Reduce JavaScript bundle size using code splitting.
+
+Use caching strategies to improve load times.
+
+Minimize re-renders in React applications.
+
+Use tools like Lighthouse to analyze performance.
+
+Avoid unnecessary dependencies in your project.
+
+Use CDN for faster content delivery.
+
+Measure performance regularly and iterate improvements.
+
+A fast frontend creates a better user experience.`
+  },
+
+  {
+    slug: "open-source",
+    title: "Why You Should Contribute to Open Source",
+    author: "Karan Mehta",
+    date: "Dec 1, 2025",
+    readTime: "5 min read",
+    image: "/placeholder_image.webp",
+    excerpt: "Boost your career with open-source contributions.",
+    content: `Open source contribution is one of the best ways to grow as a developer.
+
+It helps you understand real-world codebases and collaboration.
+
+Start by exploring beginner-friendly repositories.
+
+Fix small bugs or improve documentation initially.
+
+Gradually move to more complex contributions.
+
+You learn version control systems like Git effectively.
+
+Collaboration with global developers improves communication skills.
+
+Open source contributions strengthen your resume.
+
+It also helps in networking with experienced developers.
+
+Consistency is key — contribute regularly.
+
+Don’t be afraid to ask questions and seek guidance.
+
+Open source can significantly boost your career growth.`
+  },
+
+  {
+    slug: "mock-interviews",
+    title: "How Mock Interviews Can 10x Your Prep",
+    author: "Isha Patel",
+    date: "Nov 20, 2025",
+    readTime: "6 min read",
+    image: "/placeholder_image.webp",
+    excerpt: "Simulate real interviews and improve faster.",
+    content: `Mock interviews are one of the most effective ways to prepare for real interviews.
+
+They simulate actual interview pressure and environment.
+
+You get valuable feedback on your performance.
+
+Mock interviews help identify your weak areas.
+
+They improve your communication and confidence.
+
+Practice with peers or use online platforms.
+
+Focus on explaining your thought process clearly.
+
+Learn to handle unexpected questions.
+
+Time management improves significantly.
+
+Review your performance after each mock session.
+
+Consistency in mock interviews leads to better results.
+
+They are a game-changer for serious aspirants.`
+  },
+
+  {
+    slug: "productivity",
+    title: "Developer Productivity Hacks",
+    author: "Arjun Das",
+    date: "Nov 5, 2025",
+    readTime: "4 min read",
+    image: "/placeholder_image.webp",
+    excerpt: "Work smarter, not harder.",
+    content: `Productivity is crucial for developers working on multiple tasks.
+
+Start by prioritizing your tasks effectively.
+
+Use tools like Notion or Trello to stay organized.
+
+Learn keyboard shortcuts to save time.
+
+Automate repetitive tasks wherever possible.
+
+Avoid multitasking — focus on one task at a time.
+
+Take regular breaks to maintain efficiency.
+
+Use version control effectively.
+
+Keep your workspace clean and distraction-free.
+
+Set realistic goals and deadlines.
+
+Track your progress and improve continuously.
+
+Smart work always beats hard work in the long run.`
+  }
+];

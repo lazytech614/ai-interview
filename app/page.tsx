@@ -147,7 +147,7 @@ export default function LandingPage() {
       </section>
 
       {/* FEATURES */}
-      <section className="relative z-10 py-28 max-w-5xl mx-auto px-6">
+      <section id="features" className="relative z-10 py-28 max-w-5xl mx-auto px-6">
         <div className="text-center mb-16">
           <SectionLabel>Features</SectionLabel>
           <SectionHeading
@@ -253,7 +253,7 @@ export default function LandingPage() {
       </section>
 
       {/* ROLES */}
-      <section className="relative z-10 pb-28 max-w-5xl mx-auto px-6">
+      <section id="how-it-works" className="relative z-10 pb-28 max-w-5xl mx-auto px-6">
         <div className="text-center mb-16">
           <SectionLabel>Who it&apos;s for</SectionLabel>
           <SectionHeading gray="Built for both sides" gold="of the table" />
