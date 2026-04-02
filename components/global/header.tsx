@@ -12,16 +12,17 @@ const Header = async () => {
 
 
   return (
-    <header className="fixed top-0 inset-x-0 z-50 flex justify-between items-center px-10 py-3 border-b border-white/70 backdrop-blur-xl">
-        <Link href="/">
-            <Image 
-                src="/logo.png" 
-                alt="logo" 
-                width={100} 
-                height={100} 
-                className="h-11 w-auto"
-            />
-        </Link>
+    <header className="fixed top-0 inset-x-0 z-50 flex justify-between items-center py-3 border-b border-white/20 backdrop-blur-xl w-full">
+        <div className="max-w-350 mx-auto px-4 sm:px-8 flex justify-between items-center w-full">
+            <Link href="/">
+                <Image 
+                    src="/logo.png" 
+                    alt="logo" 
+                    width={100} 
+                    height={100} 
+                    className="h-11 w-auto"
+                />
+            </Link>
 
         {/* REDIRECTION LOGIC  */}
         {user && <RoleRedirect role={user.role} />}
@@ -70,6 +71,7 @@ const Header = async () => {
 
                 <UserButton />
             </Show>
+        </div>
         </div>
     </header>
   )
