@@ -18,85 +18,172 @@ const withdrawalLimiter = createRateLimitor({
   capacity: 3,
 });
 
-export const setAvailability = async({startTime, endTime}: any) => {
-    try {
-        const {userId} = await auth()
-        if(!userId) throw new Error("Unauthorized")
+// export const setAvailability = async({startTime, endTime}: any) => {
+//     try {
+//         const {userId} = await auth()
+//         if(!userId) throw new Error("Unauthorized")
         
-        const user = await prisma.user.findUnique({
-            where: {
-                clerkUserId: userId
-            }
-        })
-        if(!user) throw new Error("User not found")
-        if(user.role !== "INTERVIEWER") throw new Error("Only interviewers can set availability")
+//         const user = await prisma.user.findUnique({
+//             where: {
+//                 clerkUserId: userId
+//             }
+//         })
+//         if(!user) throw new Error("User not found")
+//         if(user.role !== "INTERVIEWER") throw new Error("Only interviewers can set availability")
 
-        if(!startTime || !endTime) throw new Error("Missing required fields")
+//         if(!startTime || !endTime) throw new Error("Missing required fields")
 
-        if(new Date(startTime) > new Date(endTime)) throw new Error("Start time must be before end time")
+//         if(new Date(startTime) > new Date(endTime)) throw new Error("Start time must be before end time")
         
-        const existing = await prisma.availability.findFirst({
-            where: {
-                interviewerId: user.id,
-                status: "AVAILABLE"
-            }
-        })
+//         const existing = await prisma.availability.findFirst({
+//             where: {
+//                 interviewerId: user.id,
+//                 status: "AVAILABLE"
+//             }
+//         })
 
-        if(existing) {
-            await prisma.availability.update({
-                where: {
-                    id: existing.id
-                },
-                data: {
-                    startTime: new Date(startTime),
-                    endTime: new Date(endTime)
-                }
-            })
-        }else {
-            await prisma.availability.create({
-                data: {
-                    interviewerId: user.id,
-                    startTime: new Date(startTime),
-                    endTime: new Date(endTime),
-                    status: "AVAILABLE"
-                }
-            })
-        }
+//         if(existing) {
+//             await prisma.availability.update({
+//                 where: {
+//                     id: existing.id
+//                 },
+//                 data: {
+//                     startTime: new Date(startTime),
+//                     endTime: new Date(endTime)
+//                 }
+//             })
+//         }else {
+//             await prisma.availability.create({
+//                 data: {
+//                     interviewerId: user.id,
+//                     startTime: new Date(startTime),
+//                     endTime: new Date(endTime),
+//                     status: "AVAILABLE"
+//                 }
+//             })
+//         }
 
-        revalidatePath("/dashboard")
-        return {success: true}
-    }catch(err) {
-        console.error("SOMETHING WENT WRONG SETTING AVAILABILITY", err)
-        throw new Error("Something went wrong setting availability")
+//         revalidatePath("/dashboard")
+//         return {success: true}
+//     }catch(err) {
+//         console.error("SOMETHING WENT WRONG SETTING AVAILABILITY", err)
+//         throw new Error("Something went wrong setting availability")
+//     }
+// }
+
+export const setAvailability = async ({
+  date,
+  slots,
+}: {
+  date: string;
+  slots: { startTime: string; endTime: string }[];
+}) => {
+  try {
+    const { userId } = await auth();
+    if (!userId) throw new Error("Unauthorized");
+
+    const user = await prisma.user.findUnique({ where: { clerkUserId: userId } });
+    if (!user) throw new Error("User not found");
+    if (user.role !== "INTERVIEWER") throw new Error("Only interviewers can set availability");
+
+    if (!date || !slots?.length) throw new Error("Missing required fields");
+
+    // Enforce 7-day window using UTC to avoid timezone mismatch
+    const [y, m, d] = date.split("-").map(Number);
+    const slotDate = new Date(Date.UTC(y, m - 1, d));
+
+    const todayUTC = new Date();
+    todayUTC.setUTCHours(0, 0, 0, 0);
+    const maxDateUTC = new Date(todayUTC);
+    maxDateUTC.setUTCDate(todayUTC.getUTCDate() + 6);
+
+    if (slotDate < todayUTC || slotDate > maxDateUTC) {
+      throw new Error("Date must be within the next 7 days");
     }
-}
 
-export const getAvailability = async() => {
-    try {
-        const {userId} = await auth()
-        if(!userId) throw new Error("Unauthorized")
-        
-        const user = await prisma.user.findUnique({
-            where: {
-                clerkUserId: userId
-            }
-        })
-        if(!user) throw new Error("User not found")
-        if(user.role !== "INTERVIEWER") throw new Error("Only interviewers can get availability")
-
-        const availability = await prisma.availability.findFirst({
-            where: {
-                interviewerId: user.id,
-                status: "AVAILABLE"
-            }
-        })
-
-        return availability
-    }catch(err) {
-        console.error("SOMETHING WENT WRONG GETTING AVAILABILITY", err) 
-        throw new Error("Something went wrong getting availability")
+    // Validate each slot
+    for (const { startTime, endTime } of slots) {
+      if (new Date(startTime) >= new Date(endTime)) {
+        throw new Error("Each slot's end time must be after its start time");
+      }
     }
-}
+
+    // Use UTC-based day boundaries to match the date key
+    const dayStart = new Date(Date.UTC(y, m - 1, d));
+    const dayEnd   = new Date(Date.UTC(y, m - 1, d, 23, 59, 59, 999));
+
+    await prisma.availability.deleteMany({
+      where: {
+        interviewerId: user.id,
+        status: "AVAILABLE",
+        startTime: { gte: dayStart, lte: dayEnd },
+      },
+    });
+
+    await prisma.availability.createMany({
+      data: slots.map(({ startTime, endTime }) => ({
+        interviewerId: user.id,
+        startTime: new Date(startTime),
+        endTime:   new Date(endTime),
+        status:    "AVAILABLE" as const,
+      })),
+    });
+
+    revalidatePath("/dashboard");
+    return { success: true };
+  } catch (err) {
+    console.error("SOMETHING WENT WRONG SETTING AVAILABILITY", err);
+    throw new Error("Something went wrong setting availability");
+  }
+};
+
+export const getAvailability = async () => {
+  try {
+    const { userId } = await auth();
+    if (!userId) throw new Error("Unauthorized");
+
+    const user = await prisma.user.findUnique({
+      where: { clerkUserId: userId },
+    });
+    if (!user) throw new Error("User not found");
+    if (user.role !== "INTERVIEWER")
+      throw new Error("Only interviewers can get availability");
+
+    // Get next 7 days window
+    const todayUTC = new Date();
+    todayUTC.setUTCHours(0, 0, 0, 0);
+    const maxDateUTC = new Date(todayUTC);
+    maxDateUTC.setUTCDate(todayUTC.getUTCDate() + 6);
+
+    const availabilities = await prisma.availability.findMany({
+      where: {
+        interviewerId: user.id,
+        status: "AVAILABLE",
+        startTime: { gte: todayUTC, lte: maxDateUTC },
+      },
+      orderBy: { startTime: "asc" },
+    });
+
+    // Group by date key so the frontend gets Record<string, {startTime, endTime}[]>
+    const grouped = availabilities.reduce(
+      (acc, slot) => {
+        const key = slot.startTime.toISOString().slice(0, 10);
+        if (!acc[key]) acc[key] = [];
+        acc[key].push({
+          startTime: slot.startTime.toISOString(),
+          endTime: slot.endTime.toISOString(),
+        });
+        return acc;
+      },
+      {} as Record<string, { startTime: string; endTime: string }[]>
+    );
+
+    return grouped;
+  } catch (err) {
+    console.error("SOMETHING WENT WRONG GETTING AVAILABILITY", err);
+    throw new Error("Something went wrong getting availability");
+  }
+};
 
 export const getInterviewerAppointments = async() => {
     try {

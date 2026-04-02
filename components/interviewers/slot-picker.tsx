@@ -16,14 +16,19 @@ import {
 } from "@/lib/helpers";
 import UpgradeModal from "../global/upgrade-modal";
 
-const SLOT_DURATION_MINUTES = 45;
+const DURATION_OPTIONS = [
+  { label: "45 min", value: 45 },
+  { label: "1 hour", value: 60 },
+  { label: "1.5 hrs", value: 90 },
+] as const;
+
 const DAYS_AHEAD = 7;
 
 export type BookSlotResponse = {
-  success: boolean
-  bookingId: string
-  streamCallId: string
-}
+  success: boolean;
+  bookingId: string;
+  streamCallId: string;
+};
 
 type Slot = {
   startTime: Date;
@@ -39,76 +44,66 @@ export default function SlotPicker({
 }: any) {
   const router = useRouter();
   const dates = useMemo(() => generateDates(DAYS_AHEAD), []);
-  const [selectedDate, setSelectedDate] = useState(dates[0]);
-  const [selectedSlot, setSelectedSlot] = useState<Slot | null>(null);
-  const [upgradeOpen, setUpgradeOpen] = useState(false);
+
+  const [selectedDate, setSelectedDate]     = useState(dates[0]);
+  const [selectedSlot, setSelectedSlot]     = useState<Slot | null>(null);
+  const [duration, setDuration]             = useState<45 | 60 | 90>(45);
+  const [upgradeOpen, setUpgradeOpen]       = useState(false);
 
   const summaryRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (selectedSlot && summaryRef.current) {
-      summaryRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
+      summaryRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }, [selectedSlot]);
 
-  const { 
-    data, 
-    loading, 
-    error, 
-    fn: bookFn 
-  } = useFetch<BookSlotResponse>(bookSlot);
+  const { data, loading, error, fn: bookFn } = useFetch<BookSlotResponse>(bookSlot);
 
-  const availability = interviewer.availabilities?.[0];
+  const availabilities: { startTime: any; endTime: any }[] = interviewer.availabilities ?? [];
   const canAfford = userCredits >= interviewerCredits;
 
+  // Reset selected slot when duration or date changes — it may no longer be valid
+  useEffect(() => { setSelectedSlot(null); }, [duration, selectedDate]);
+
   const slots = useMemo(() => {
-    if (!availability) {
-      return [];
-    }
+    if (!availabilities.length) return [];
     return generateSlots(
       selectedDate,
-      availability.startTime,
-      availability.endTime,
+      availabilities,
       interviewer.bookingsAsInterviewer ?? [],
-      SLOT_DURATION_MINUTES
+      duration                             // pass chosen duration
     );
-  }, [selectedDate, availability, interviewer.bookingsAsInterviewer]);
+  }, [selectedDate, availabilities, interviewer.bookingsAsInterviewer, duration]);
 
   useEffect(() => {
-    if (data?.success && data.streamCallId) {
-      router.push(`/appointments`);
-    }
+    if (data?.success && data.streamCallId) router.push("/appointments");
   }, [data, router]);
 
-  const handleDateChange = (date: any) => {
+  const handleDateChange = (date: Date) => {
     setSelectedDate(date);
     setSelectedSlot(null);
   };
 
-  const handleSlotClick = (slot: any) => {
+  const handleSlotClick = (slot: Slot) => {
     if (!slot.available) return;
-    if (!canAfford) {
-      setUpgradeOpen(true);
-      return;
-    }
+    if (!canAfford) { setUpgradeOpen(true); return; }
     setSelectedSlot((prev) =>
       prev?.startTime.getTime() === slot.startTime.getTime() ? null : slot
     );
   };
 
-  const handleConfirm = () => {    
+  const handleConfirm = () => {
     if (!selectedSlot) return;
     bookFn({
       interviewerId: interviewer.id,
       startTime: selectedSlot.startTime.toISOString(),
-      endTime: selectedSlot.endTime.toISOString(),
+      endTime:   selectedSlot.endTime.toISOString(),
+      duration,                            // send duration to server action
     });
   };
 
-  if (!availability) {
+  if (!availabilities.length) {
     return (
       <div className="bg-[#0f0f11] border border-white/10 rounded-2xl p-8 text-center flex flex-col items-center gap-2">
         <span className="text-2xl">🕐</span>
@@ -127,8 +122,8 @@ export default function SlotPicker({
       />
 
       <div className="flex flex-col gap-4">
-        {/* ── Main picker card ── */}
         <div className="bg-[#0f0f11] border border-white/10 rounded-2xl p-7 flex flex-col gap-6">
+
           {/* Header */}
           <div className="flex items-start justify-between gap-3">
             <div>
@@ -136,26 +131,48 @@ export default function SlotPicker({
                 <GrayTitle>Book a session</GrayTitle>
               </h2>
               <p className="text-xs text-stone-500 font-light mt-1">
-                Select a date and available time slot.
+                Choose a duration, date, and time slot.
               </p>
             </div>
             <div className="text-right shrink-0">
               <p className="text-xs text-stone-600">Cost</p>
               <p className="font-serif text-2xl leading-none bg-linear-to-br from-amber-300 to-amber-500 bg-clip-text text-transparent">
                 {interviewerCredits}
-                <span className="text-xs font-sans text-stone-500 ml-1">
-                  cr
-                </span>
+                <span className="text-xs font-sans text-stone-500 ml-1">cr</span>
               </p>
             </div>
           </div>
 
+          {/* Duration picker */}
+          <div className="flex flex-col gap-2">
+            <p className="text-[11px] font-medium tracking-wider text-stone-500 uppercase">
+              Session duration
+            </p>
+            <div className="flex gap-2">
+              {DURATION_OPTIONS.map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => setDuration(opt.value as 45 | 60 | 90)}
+                  className={`flex-1 py-2.5 rounded-xl border text-xs font-medium transition-all duration-200 ${
+                    duration === opt.value
+                      ? "border-amber-400/50 bg-amber-400/10 text-amber-400"
+                      : "border-white/10 text-stone-500 hover:border-white/20 hover:text-stone-400"
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="h-px bg-white/5" />
+
           {/* Date tabs */}
           <div className="flex gap-2 overflow-x-auto pb-0.5 scrollbar-none -mx-1 px-1">
             {dates.map((date) => {
-              const label = formatDateTab(date);
-              const active =
-                date.toDateString() === selectedDate.toDateString();
+              const label  = formatDateTab(date);
+              const active = date.toDateString() === selectedDate.toDateString();
               return (
                 <button
                   key={date.toDateString()}
@@ -168,11 +185,7 @@ export default function SlotPicker({
                   }`}
                 >
                   <span className="font-medium">{label.top}</span>
-                  <span
-                    className={`mt-0.5 ${
-                      active ? "text-amber-500/70" : "text-stone-700"
-                    }`}
-                  >
+                  <span className={`mt-0.5 ${active ? "text-amber-500/70" : "text-stone-700"}`}>
                     {label.bottom}
                   </span>
                 </button>
@@ -185,15 +198,12 @@ export default function SlotPicker({
           {/* Time grid */}
           {slots.length === 0 ? (
             <p className="text-xs text-stone-600 text-center py-4">
-              No slots in the availability window for this date.
+              No slots available for this duration on this date.
             </p>
           ) : (
             <div className="grid grid-cols-3 gap-2">
               {slots.map((slot) => {
-                const isSelected =
-                  selectedSlot?.startTime.getTime() ===
-                  slot.startTime.getTime();
-
+                const isSelected = selectedSlot?.startTime.getTime() === slot.startTime.getTime();
                 return (
                   <button
                     key={slot.startTime.toISOString()}
@@ -224,7 +234,7 @@ export default function SlotPicker({
           )}
         </div>
 
-        {/* ── Inline confirm card ── */}
+        {/* Confirm card */}
         {selectedSlot && (
           <div
             ref={summaryRef}
@@ -237,21 +247,18 @@ export default function SlotPicker({
             <div className="flex flex-col gap-2">
               <div className="flex justify-between text-xs">
                 <span className="text-stone-500">Date</span>
-                <span className="text-stone-300">
-                  {formatDateFull(selectedSlot.startTime)}
-                </span>
+                <span className="text-stone-300">{formatDateFull(selectedSlot.startTime)}</span>
               </div>
               <div className="flex justify-between text-xs">
                 <span className="text-stone-500">Time</span>
                 <span className="text-stone-300">
-                  {formatTime(selectedSlot.startTime)} –{" "}
-                  {formatTime(selectedSlot.endTime)}
+                  {formatTime(selectedSlot.startTime)} – {formatTime(selectedSlot.endTime)}
                 </span>
               </div>
               <div className="flex justify-between text-xs">
                 <span className="text-stone-500">Duration</span>
                 <span className="text-stone-300">
-                  {SLOT_DURATION_MINUTES} minutes
+                  {DURATION_OPTIONS.find((o) => o.value === duration)?.label}
                 </span>
               </div>
             </div>
@@ -266,42 +273,27 @@ export default function SlotPicker({
             </div>
             <div className="flex justify-between text-xs">
               <span className="text-stone-600">Balance after</span>
-              <span className="text-stone-500">
-                {userCredits - interviewerCredits} credits
-              </span>
+              <span className="text-stone-500">{userCredits - interviewerCredits} credits</span>
             </div>
 
             <div className="flex items-start gap-2.5 rounded-xl border border-white/8 bg-white/2 px-3.5 py-3">
               <span className="text-sm shrink-0">🎥</span>
               <p className="text-xs text-stone-500 font-light leading-relaxed">
-                A video call room will be created and you&apos;ll be redirected
-                immediately after confirming.
+                A video call room will be created and you&apos;ll be redirected immediately after confirming.
               </p>
             </div>
 
-            {error && typeof error !== 'string' ? (
-              <p className="text-xs text-red-400">{error.message}</p>
-            ) : (
-              <p className="text-xs text-red-400">{error}</p>
+            {error && (
+              <p className="text-xs text-red-400">
+                {typeof error === "string" ? error : (error as Error).message}
+              </p>
             )}
 
             <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex-1"
-                disabled={loading}
-                onClick={() => setSelectedSlot(null)}
-              >
+              <Button variant="outline" size="sm" className="flex-1" disabled={loading} onClick={() => setSelectedSlot(null)}>
                 Change slot
               </Button>
-              <Button
-                variant="gold"
-                size="sm"
-                className="flex-1"
-                disabled={loading}
-                onClick={handleConfirm}
-              >
+              <Button variant="gold" size="sm" className="flex-1" disabled={loading} onClick={handleConfirm}>
                 {loading ? "Creating call…" : "Confirm →"}
               </Button>
             </div>

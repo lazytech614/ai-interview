@@ -1,147 +1,117 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
-import { useEffect, useState } from "react";
+import { Clock, Plus, Copy, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { GrayTitle } from "@/components/global/reusables";
-import useFetch from "@/hooks/use-fetch";
-import { Clock } from "lucide-react";
-import { setAvailability } from "@/actions/dashboard";
+import { GrayTitle } from "../global/reusables";
+import { DayStrip } from "./day-strip";
+import { DAY_LABELS, MONTH_LABELS } from "./constants/constants";
+import { SlotEditor } from "./slot-editor";
+import { AvailabilitySectionProps } from "./types/types";
+import { useAvailability } from "./hooks/use-availability";
 
-export default function AvailabilitySection({ initial }: any) {
-  const [startTime, setStartTime] = useState(
-    initial?.startTime
-      ? new Date(initial.startTime).toTimeString().slice(0, 5)
-      : ""
-  );
-  const [endTime, setEndTime] = useState(
-    initial?.endTime ? new Date(initial.endTime).toTimeString().slice(0, 5) : ""
-  );
-  const [saved, setSaved] = useState(false);
-
-  const { data, loading, error, fn: saveFn } = useFetch(setAvailability);
-
-  useEffect(() => {
-    if (data?.success) {
-      setSaved(true);
-      const t = setTimeout(() => setSaved(false), 3000);
-      return () => clearTimeout(t);
-    }
-  }, [data]);
-
-  const toISO = (time: any) => {
-    const [h, m] = time.split(":").map(Number);
-    const d = new Date();
-    d.setHours(h, m, 0, 0);
-    return d.toISOString();
-  };
-
-  const handleSave = () => {
-    if (!startTime || !endTime) return;
-    saveFn({ startTime: toISO(startTime), endTime: toISO(endTime) });
-  };
-
-  const hasWindow = startTime && endTime;
-  const duration = hasWindow
-    ? (() => {
-        const [sh, sm] = startTime.split(":").map(Number);
-        const [eh, em] = endTime.split(":").map(Number);
-        const diff = eh * 60 + em - (sh * 60 + sm);
-        if (diff <= 0) return null;
-        const h = Math.floor(diff / 60);
-        const m = diff % 60;
-        return h > 0 ? `${h}h ${m > 0 ? `${m}m` : ""}`.trim() : `${m}m`;
-      })()
-    : null;
+export default function AvailabilitySection({ initial }: AvailabilitySectionProps) {
+  const {
+    days, selectedIdx, setSelectedIdx,
+    selectedDay, selectedKey,
+    daySlots, slots,
+    savedKeys, validationError, loading, error,
+    addSlot, removeSlot, nudgeHour, nudgeMinute, setAP,
+    handleSave, applyToAll,
+    configuredCount,
+  } = useAvailability(initial);
 
   return (
     <section className="bg-[#0f0f11] border border-white/10 rounded-2xl p-8 flex flex-col gap-7">
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <span className="w-10 h-10 rounded-xl bg-amber-400/10 border border-amber-400/20 flex items-center justify-center text-lg mb-4">
+          <span className="w-10 h-10 rounded-xl bg-amber-400/10 border border-amber-400/20 flex items-center justify-center mb-4">
             <Clock size={18} className="text-amber-400" />
           </span>
           <h2 className="font-serif text-xl tracking-tight">
-            <GrayTitle>Daily availability window</GrayTitle>
+            <GrayTitle>Weekly availability</GrayTitle>
           </h2>
           <p className="text-xs text-stone-500 font-light mt-1">
-            Interviewees can book within this window every day.
+            Set one or more booking windows per day, across the next 7 days.
           </p>
         </div>
-
-        {initial && (
-          <Badge
-            variant="outline"
-            className="shrink-0 border-green-500/20 bg-green-500/10 text-green-400"
-          >
-            Active
+        {configuredCount > 0 && (
+          <Badge variant="outline" className="shrink-0 border-green-500/20 bg-green-500/10 text-green-400">
+            {configuredCount}/7 days set
           </Badge>
         )}
       </div>
 
       <div className="h-px bg-white/5" />
 
-      {/* Time inputs */}
-      <div className="grid grid-cols-2 gap-4">
-        <div className="flex flex-col gap-2">
-          <Label className="text-stone-400 text-xs">Start time</Label>
-          <Input
-            type="time"
-            value={startTime}
-            onChange={(e) => setStartTime(e.target.value)}
-            className="bg-[#141417] border-white/10 text-stone-100"
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <Label className="text-stone-400 text-xs">End time</Label>
-          <Input
-            type="time"
-            value={endTime}
-            onChange={(e) => setEndTime(e.target.value)}
-            className="bg-[#141417] border-white/10 text-stone-100"
-          />
-        </div>
+      <DayStrip
+        days={days}
+        selectedIdx={selectedIdx}
+        slots={slots}
+        onSelect={(i) => setSelectedIdx(i)}
+      />
+
+      {/* Selected day label */}
+      <div className="flex items-center gap-2 text-sm text-stone-400">
+        <ChevronRight size={14} className="text-amber-400" />
+        <span>{DAY_LABELS[selectedDay.getDay()]}, {MONTH_LABELS[selectedDay.getMonth()]} {selectedDay.getDate()}</span>
+        {savedKeys.has(selectedKey) && (
+          <Badge variant="outline" className="border-green-500/20 bg-green-500/10 text-green-400 text-[10px] px-2 py-0.5">
+            ✓ Saved
+          </Badge>
+        )}
       </div>
 
-      {/* Duration pill */}
-      {duration && (
-        <div className="flex items-center gap-3">
-          <Badge
-            variant="outline"
-            className="border-amber-400/20 bg-amber-400/5 text-amber-400"
-          >
-            {duration} window
-          </Badge>
-          <span className="text-xs text-stone-600">
-            Interviewees see this as your open booking range
-          </span>
-        </div>
+      {/* Slot list */}
+      <div className="flex flex-col gap-3">
+        {daySlots.map((slot: any, i: number) => (
+          <SlotEditor
+            key={slot.id}
+            slot={slot}
+            index={i}
+            onRemove={() => removeSlot(slot.id)}
+            onHour={(field, dir) => nudgeHour(slot.id, field, dir)}
+            onMinute={(field, dir) => nudgeMinute(slot.id, field, dir)}
+            onAP={(field, ap) => setAP(slot.id, field, ap)}
+          />
+        ))}
+
+        <button
+          onClick={addSlot}
+          disabled={daySlots.length >= 4}
+          className="flex items-center justify-center gap-2 py-3 rounded-xl border border-dashed border-white/10 text-stone-600 hover:border-amber-400/30 hover:text-amber-400 transition-all text-xs disabled:opacity-30 disabled:cursor-not-allowed"
+        >
+          <Plus size={13} /> Add time slot {daySlots.length >= 4 && "(max 4)"}
+        </button>
+      </div>
+
+      {/* Errors */}
+      {(validationError || error) && (
+        <p className="text-xs text-red-400">
+          {validationError ?? (typeof error === "string" ? error : (error as Error)?.message)}
+        </p>
       )}
 
-      {/* Error */}
-      {error && (
-        <p className="text-xs text-red-400">{error && typeof error === 'string' ? error : error?.message || ''}</p>
-      )}
-
-      {/* Save */}
-      <Button
-        variant="gold"
-        disabled={!hasWindow || loading}
-        onClick={handleSave}
-        className="self-start"
-      >
-        {loading
-          ? "Saving…"
-          : saved
-          ? "✓ Saved"
-          : initial
-          ? "Update window"
-          : "Set availability"}
-      </Button>
+      {/* Actions */}
+      <div className="flex items-center gap-3">
+        <Button
+          variant="gold"
+          disabled={daySlots.length === 0 || loading}
+          onClick={handleSave}
+          className="self-start"
+        >
+          {loading ? "Saving…" : "Save availability"}
+        </Button>
+        <Button
+          variant="ghost" size="sm"
+          disabled={daySlots.length === 0}
+          onClick={applyToAll}
+          className="text-stone-500 hover:text-stone-300 gap-1.5 text-xs"
+        >
+          <Copy size={12} /> Apply to all days
+        </Button>
+      </div>
     </section>
   );
 }

@@ -51,7 +51,6 @@ export const getInterviewerProfile = async (id: string) => {
                         startTime: true,
                         endTime: true
                     },
-                    take: 1
                 },
                 bookingsAsInterviewer: {
                     where: {
@@ -72,10 +71,33 @@ export const getInterviewerProfile = async (id: string) => {
     }
 };
 
-export const bookSlot = async ({interviewerId, startTime, endTime}: {interviewerId: string, startTime: string, endTime: string}): Promise<BookSlotResponse> => {
+export const bookSlot = async ({interviewerId, startTime, endTime, duration}: {interviewerId: string, startTime: string, endTime: string, duration: 45 | 60 | 90;}): Promise<BookSlotResponse> => {
     try {
         const {userId} = await auth()
         if(!userId) throw new Error("Unauthorized")
+
+        const start = new Date(startTime);
+        const end   = new Date(endTime);
+
+        // Verify the endTime actually matches the chosen duration
+        // This prevents a tampered client from sending a wrong endTime
+        const expectedEnd = new Date(start.getTime() + duration * 60 * 1000);
+        if (end.getTime() !== expectedEnd.getTime()) {
+        throw new Error("Invalid slot duration");
+        }
+
+        // Collision check — reject if any SCHEDULED booking overlaps this window
+        const collision = await prisma.booking.findFirst({
+        where: {
+            interviewerId,
+            status: "SCHEDULED",
+            AND: [
+            { startTime: { lt: end   } },   // existing starts before new ends
+            { endTime:   { gt: start } },   // existing ends after new starts
+            ],
+        },
+        });
+        if (collision) throw new Error("This slot has just been booked. Please choose another.");
             
         //  ARCJET RATE LIMITING 
         const req = await request()
