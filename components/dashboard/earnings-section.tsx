@@ -76,7 +76,7 @@ export default function EarningsSection({ stats, history }: any) {
   return (
     <section className="flex flex-col gap-6">
       {/* Stats row */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
           {
             label: "Credit balance",
@@ -129,7 +129,7 @@ export default function EarningsSection({ stats, history }: any) {
       </div>
 
       {/* Withdrawal trigger card */}
-      <div className="bg-[#0f0f11] border border-white/10 rounded-2xl p-8 flex items-center justify-between gap-4">
+      <div className="bg-[#0f0f11] border border-white/10 rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="font-serif text-xl tracking-tight">
             <GrayTitle>Withdraw earnings</GrayTitle>
@@ -150,7 +150,7 @@ export default function EarningsSection({ stats, history }: any) {
 
       {/* Withdrawal history */}
       {history?.length > 0 && (
-        <div className="bg-[#0f0f11] border border-white/10 rounded-2xl p-8 flex flex-col gap-5">
+        <div className="bg-[#0f0f11] border border-white/10 rounded-2xl p-6 flex flex-col gap-5">
           <p className="text-xs font-semibold text-stone-500 tracking-widest uppercase">
             Withdrawal history
           </p>

@@ -15,7 +15,7 @@ export default function AppointmentsSection({ appointments }: any) {
 
   return (
     <section className="flex flex-col gap-6">
-      <div className="bg-[#0f0f11] border border-white/10 rounded-2xl p-8">
+      <div className="bg-[#0f0f11] border border-white/10 rounded-2xl p-6">
         <span className="w-10 h-10 rounded-xl bg-amber-400/10 border border-amber-400/20 flex items-center justify-center mb-4">
           <ClipboardList size={18} className="text-amber-400" />
         </span>
