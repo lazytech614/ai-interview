@@ -26,8 +26,8 @@ import "stream-chat-react/dist/css/v2/index.css";
 
 import { Badge } from "@/components/ui/badge";
 import { MessageSquare, Sparkles, Loader2 } from "lucide-react";
-import AIQuestionsPanel from "./ai-questions";
 import type { Channel as StreamChannel } from "stream-chat";
+import AIQuestionsPanel from "./ai-questions";
 
 export default function CallUI({
   callId,

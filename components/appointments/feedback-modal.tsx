@@ -15,9 +15,9 @@ import {
   CheckCircle2,
   AlertCircle,
 } from "lucide-react";
-import { GrayTitle } from "@/components/reusables";
+import { GrayTitle } from "@/components/global/reusables";
 import { RATING_CONFIG } from "@/lib/data";
-import { StarsBackgroundDemo } from "./demo-components-background-stars";
+import { StarsBackgroundDemo } from "../global/demo-components-background-stars";
 
 export function FeedbackModal({
   open,

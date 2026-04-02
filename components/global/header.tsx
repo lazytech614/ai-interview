@@ -1,11 +1,11 @@
 import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs"
-import { Button } from "./ui/button"
+import { Button } from "../ui/button"
 import Link from "next/link"
 import Image from "next/image"
 import { checkUser } from "@/lib/check.user"
 import { Calendar1Icon, Users } from "lucide-react"
-import CreditButton from "./credit-button"
 import RoleRedirect from "./role-redirect"
+import CreditButton from "./credit-button"
 
 const Header = async () => {
     const user = await checkUser()

@@ -1,5 +1,5 @@
 import { getCallData } from "@/actions/call"
-import CallRoom from "@/components/call-room"
+import CallRoom from "@/components/call/call-room"
 import { redirect } from "next/navigation"
 import { toast } from "sonner"
 

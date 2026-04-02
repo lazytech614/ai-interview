@@ -1,12 +1,12 @@
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import PageHeader from "@/components/reusables";
+import PageHeader from "@/components/global/reusables";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ClipboardList, Clock, Wallet } from "lucide-react";
 import { getCurrentUser } from "@/actions/user";
-import AppointmentsSection from "@/components/appointments-section";
-import AvailabilitySection from "@/components/availability-section";
-import EarningsSection from "@/components/earnings-section";
+import AppointmentsSection from "@/components/dashboard/appointments-section";
+import AvailabilitySection from "@/components/dashboard/availability-section";
+import EarningsSection from "@/components/dashboard/earnings-section";
 import { getAvailability, getInterviewerAppointments, getInterviewerStats, getWithdrawalHistory } from "@/actions/dashboard";
 
 export default async function InterviewerDashboardPage() {

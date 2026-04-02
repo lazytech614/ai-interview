@@ -1,7 +1,7 @@
 import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { GoldTitle, GrayTitle, SectionLabel } from "@/components/reusables";
-import PayoutReviewClient from "@/components/payout-review-client";
+import { GoldTitle, GrayTitle, SectionLabel } from "@/components/global/reusables";
+import PayoutReviewClient from "@/components/payout/payout-review-client";
 
 export default async function PayoutReviewPage({ params }: any) {
   const { id } = await params;

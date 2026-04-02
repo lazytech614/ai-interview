@@ -2,10 +2,10 @@
 
 import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
-import { Input } from "./ui/input";
 import { CATEGORIES } from "@/lib/data";
 import { InterviewCategory } from "@/lib/generated/prisma/enums";
-import { Button } from "./ui/button";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
 import InterviewerCard from "./interviewer-card";
 
 const ExploreGrid = ({ interviewers }: { interviewers: any[] }) => {

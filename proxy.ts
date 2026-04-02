@@ -32,11 +32,11 @@ const aj = arcjet({
 
 export default clerkMiddleware(async (auth, req) => {
 
-  if(!isWebhookRoute(req)) {
-    const decesion = await aj.protect(req)
+  // if(!isWebhookRoute(req)) {
+  //   const decesion = await aj.protect(req)
 
-    if(decesion.isDenied()) return NextResponse.json({error: "Forbidden"}, {status: 403})
-  } 
+  //   if(decesion.isDenied()) return NextResponse.json({error: "Forbidden"}, {status: 403})
+  // } 
 
   const {userId} = await auth()
 

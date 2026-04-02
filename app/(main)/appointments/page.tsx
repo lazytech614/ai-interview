@@ -2,10 +2,10 @@ import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getIntervieweeAppointments } from "@/actions/appointments";
-import PageHeader from "@/components/reusables";
+import PageHeader from "@/components/global/reusables";
 import { Button } from "@/components/ui/button";
 import { CalendarDays } from "lucide-react";
-import {AppointmentCard} from "@/components/appointment-card";
+import { AppointmentCard } from "@/components/appointments/appointment-card";
 
 export default async function MyAppointmentsPage() {
   const user = await currentUser();

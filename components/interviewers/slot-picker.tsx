@@ -4,7 +4,7 @@ import { useMemo, useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { GrayTitle } from "@/components/reusables";
+import { GrayTitle } from "@/components/global/reusables";
 import { bookSlot } from "@/actions/booking";
 import useFetch from "@/hooks/use-fetch";
 import {

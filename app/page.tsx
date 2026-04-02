@@ -1,19 +1,20 @@
-import { CodeDemo } from "@/components/demo-components-animate-code";
-import { StarsBackgroundDemo } from "@/components/demo-components-background-stars";
+import { CodeDemo } from "@/components/global/demo-components-animate-code";
+import { StarsBackgroundDemo } from "@/components/global/demo-components-background-stars";
 import { AI_TAGS, AVATARS, LOGOS, ROLES, SLOTS } from "@/lib/data";
 import {
   GoldTitle,
   GrayTitle,
   SectionHeading,
   SectionLabel,
-} from "@/components/reusables";
+} from "@/components/global/reusables";
 import { Bot, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import Link from "next/link";
-import PricingSection from "@/components/pricing-section";
+import PricingSection from "@/components/landing/pricing-section";
 import { PricingTable } from "@clerk/nextjs";
+import { BentoCard } from "@/components/landing/bento-card";
 
 function MockUI({ rows = 3 }) {
   const widths = ["w-4/5", "w-3/5", "w-2/5", "w-4/5", "w-1/2"];
@@ -40,26 +41,6 @@ function MockUI({ rows = 3 }) {
           />
         ))}
       </div>
-    </div>
-  );
-}
-
-export function BentoCard({ icon, title, desc, children, className = "" }: any) {
-  return (
-    <div
-      className={`relative bg-[#0f0f11] border border-white/10 hover:border-amber-400/20 rounded-2xl p-9 h-full transition duration-300 overflow-hidden ${className}`}
-    >
-      <div className="absolute inset-0 bg-linear-to-br from-amber-400/5 via-transparent pointer-events-none" />
-
-      <span className="w-11 h-11 rounded-xl bg-amber-400/10 border border-amber-400/20 flex items-center justify-center text-xl mb-5">
-        {icon}
-      </span>
-
-      <h3 className="font-serif text-xl tracking-tight mb-2">{title}</h3>
-
-      <p className="text-sm text-stone-400 leading-relaxed">{desc}</p>
-
-      {children}
     </div>
   );
 }

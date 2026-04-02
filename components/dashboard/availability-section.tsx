@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { GrayTitle } from "@/components/reusables";
+import { GrayTitle } from "@/components/global/reusables";
 import useFetch from "@/hooks/use-fetch";
 import { Clock } from "lucide-react";
 import { setAvailability } from "@/actions/dashboard";

@@ -1,4 +1,4 @@
-import { GoldTitle, GrayTitle } from "@/components/reusables";
+import { GoldTitle, GrayTitle } from "@/components/global/reusables";
 import { InterviewCategory } from "./generated/prisma/enums";
 
 export const LOGOS = [

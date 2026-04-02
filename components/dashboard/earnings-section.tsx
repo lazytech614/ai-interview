@@ -16,7 +16,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { GrayTitle } from "@/components/reusables";
+import { GrayTitle } from "@/components/global/reusables";
 import useFetch from "@/hooks/use-fetch";
 import { CircleCheck, TrendingUp, Wallet } from "lucide-react";
 import { formatDate } from "@/lib/helpers";

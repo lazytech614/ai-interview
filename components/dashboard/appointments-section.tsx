@@ -1,8 +1,8 @@
 "use client";
 
-import { GrayTitle } from "@/components/reusables";
+import { GrayTitle } from "@/components/global/reusables";
 import { ClipboardList } from "lucide-react";
-import { AppointmentCard } from "./appointment-card";
+import { AppointmentCard } from "../appointments/appointment-card";
 
 export default function AppointmentsSection({ appointments }: any) {
   const now = new Date();

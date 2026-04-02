@@ -1,6 +1,6 @@
 import { getInterviewers } from "@/actions/explore"
-import ExploreGrid from "@/components/explore-grid"
-import PageHeader from "@/components/reusables"
+import ExploreGrid from "@/components/explore/explore-grid"
+import PageHeader from "@/components/global/reusables"
 
 const ExplorePage = async() => {
 

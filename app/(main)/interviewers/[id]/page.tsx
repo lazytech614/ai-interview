@@ -1,18 +1,16 @@
-import { currentUser } from "@clerk/nextjs/server";
 import { redirect, notFound } from "next/navigation";
 import { getInterviewerProfile } from "@/actions/booking";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { GrayTitle, SectionLabel } from "@/components/reusables";
-// import SlotPicker from "./_components/SlotPicker";
+import { GrayTitle, SectionLabel } from "@/components/global/reusables";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { CATEGORY_LABEL, EXPECT_ITEMS } from "@/lib/data";
 import prisma from "@/lib/prisma";
-import { StarsBackgroundDemo } from "@/components/demo-components-background-stars";
-import SlotPicker from "@/components/slot-picker";
+import { StarsBackgroundDemo } from "@/components/global/demo-components-background-stars";
 import { getCurrentUser } from "@/actions/user";
+import SlotPicker from "@/components/interviewers/slot-picker";
 
 export default async function InterviewerProfilePage({ params }: any) {
   const { id } = await params;
