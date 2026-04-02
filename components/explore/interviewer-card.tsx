@@ -8,6 +8,12 @@ import { CATEGORY_LABEL } from "@/lib/data";
 import { formatTime } from "@/lib/helpers";
 import { InterviewCategory } from "@/lib/generated/prisma/enums";
 
+const DURATION_LABEL: Record<number, string> = {
+  45: "45 mins",
+  60: "1 hour",
+  90: "1.5 hours",
+};
+
 export default function InterviewerCard({ interviewer }: any) {
   const {
     id,
@@ -18,10 +24,21 @@ export default function InterviewerCard({ interviewer }: any) {
     yearsExp,
     bio,
     categories,
-    creditRate,
+    sessionRates,
     availabilities,
   } = interviewer;
   const availability = availabilities?.[0];
+
+  // sessionRates can be an array [{duration, credits}] or a plain object {45: 1, 60: 2, 90: 5}
+  const rates: { duration: number; credits: number }[] = Array.isArray(sessionRates)
+    ? sessionRates
+    : Object.entries(sessionRates ?? {}).map(([dur, cred]) => ({
+        duration: Number(dur),
+        credits: Number(cred),
+      }));
+
+  const sortedRates = [...rates].sort((a, b) => a.duration - b.duration);
+  const lowestCredits = sortedRates[0]?.credits;
 
   return (
     <Card className="relative border border-white/10 hover:border-amber-400/20">
@@ -85,17 +102,39 @@ export default function InterviewerCard({ interviewer }: any) {
           </div>
         )}
 
+        {/* Session rates grid */}
+        {sortedRates.length > 0 && (
+          <div className="grid grid-cols-3 gap-2">
+            {sortedRates.map(({ duration, credits }) => (
+              <div
+                key={duration}
+                className="flex flex-col items-center gap-0.5 py-2 rounded-xl border border-white/8 bg-white/2"
+              >
+                <span className="text-xs text-stone-600 font-medium tracking-wide uppercase">
+                  {DURATION_LABEL[duration] ?? `${duration}m`}
+                </span>
+                <span className="font-serif text-base leading-none bg-linear-to-br from-amber-300 to-amber-500 bg-clip-text text-transparent">
+                  {credits}
+                </span>
+                <span className="text-xs text-stone-700">credits</span>
+              </div>
+            ))}
+          </div>
+        )}
+
         <Separator />
 
-        {/* Bottom row — credit rate + availability + CTA */}
+        {/* Bottom row — starting from + availability + CTA */}
         <div className="flex items-center justify-between gap-3">
           <div className="flex flex-col gap-1">
-            <p className="text-lg font-serif leading-none bg-linear-to-br from-amber-300 to-amber-500 bg-clip-text text-transparent">
-              {creditRate ?? 10}
-              <span className="text-xs text-stone-500 font-sans ml-1">
-                credits / session
-              </span>
-            </p>
+            {lowestCredits !== undefined && (
+              <p className="text-sm font-serif leading-none text-stone-400">
+                Starting from{" "}
+                <span className="bg-linear-to-br from-amber-300 to-amber-500 bg-clip-text text-transparent">
+                  {lowestCredits} credit
+                </span>
+              </p>
+            )}
             {availability ? (
               <p className="text-xs text-stone-600">
                 🟢 {formatTime(availability.startTime)} –{" "}
