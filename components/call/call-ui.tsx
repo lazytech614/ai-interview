@@ -78,8 +78,8 @@ export default function CallUI({
     const channel = chatClient.channel("messaging", callId, {
     //   name: "Interview Chat",
       members: [
-        booking.interviewer.clerkUserId,
-        booking.interviewee.clerkUserId,
+        booking.interviewer.id,
+        booking.interviewee.id,
       ],
     });
 

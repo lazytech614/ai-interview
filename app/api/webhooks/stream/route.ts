@@ -47,6 +47,8 @@ export async function POST(req: any) {
 
         // CALL ENDED
         if(eventType === "call.ended") {
+            console.log("🟢🟢 CALL ENDED")
+
             await prisma.booking.update({
                 where: { id: booking.id },
                 data: { status: "COMPLETED" }
@@ -56,6 +58,8 @@ export async function POST(req: any) {
 
         // RECORDING READY 
         if(eventType === "call.recording_ready") {
+            console.log("🟢🟢 CALL RECORDING READY")
+
             const recordingUrl = body.call_recording?.url
 
             if(!recordingUrl) return Response.json({ok: true})
@@ -74,6 +78,8 @@ export async function POST(req: any) {
 
         // TRANSCRIPTION READY 
         if(eventType === "call.transcription_ready") {
+            console.log("🟢🟢 CALL TRANSCRIPTION READY")
+
             if(booking.feedback) return Response.json({ok: true})
 
             const transcriptionUrl = body.call_transcription?.url
