@@ -56,7 +56,7 @@ export default function PricingSection() {
                     : "bg-linear-to-br from-stone-100 to-stone-400 bg-clip-text text-transparent"
                 }`}
               >
-                {formatINR(plan.price)}
+                ${plan.price}
               </span>
               <span className="text-sm text-stone-500 font-light mb-1.5">
                 /month
