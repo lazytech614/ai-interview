@@ -1,11 +1,8 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { categories } from "@arcjet/next";
 import { auth } from "@clerk/nextjs/server";
 import { StreamClient } from "@stream-io/node-sdk";
-import { start } from "repl";
-import { i } from "shiki/dist/langs-bundle-full-C-zczmvu.mjs";
 
 export const getCallData = async(callId: string) => {
     try {

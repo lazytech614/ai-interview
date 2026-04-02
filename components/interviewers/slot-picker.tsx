@@ -14,7 +14,7 @@ import {
   generateDates,
   generateSlots,
 } from "@/lib/helpers";
-import UpgradeModal from "./upgrade-modal";
+import UpgradeModal from "../global/upgrade-modal";
 
 const SLOT_DURATION_MINUTES = 45;
 const DAYS_AHEAD = 7;
