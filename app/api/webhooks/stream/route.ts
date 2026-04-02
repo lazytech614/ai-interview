@@ -5,7 +5,7 @@ export async function POST(req: any) {
     const body = await req.json(); 
     const eventType = body.type; 
 
-    if(eventType !== "call.transcription_ready" && eventType !== "call.recording_ready") return Response.json({ok: true})
+    if(eventType !== "call.transcription_ready" && eventType !== "call.recording_ready" && eventType !== "call.ended") return Response.json({ok: true})
     
     const callCid = body.call_cid ?? ""
     const streamCallId = callCid.includes(":") ? callCid.split(":")[1] : callCid
@@ -44,6 +44,15 @@ export async function POST(req: any) {
         })
 
         if(!booking) return Response.json({ok: true})
+
+        // CALL ENDED
+        if(eventType === "call.ended") {
+            await prisma.booking.update({
+                where: { id: booking.id },
+                data: { status: "COMPLETED" }
+            })
+            return Response.json({ok: true})
+        }
 
         // RECORDING READY 
         if(eventType === "call.recording_ready") {
@@ -168,13 +177,9 @@ export async function POST(req: any) {
                 },
                 update: {}, // already exists — no-op, keep the original
                 }),
-                prisma.booking.update({
-                where: { id: booking.id },
-                data: { status: "COMPLETED" },
-                }),
             ]);
             console.log(
-                `[stream-webhook] Feedback upserted + booking marked COMPLETED`
+                `[stream-webhook] Feedback upserted`
             );
 
             // Credit transaction is outside the main transaction so we can check first
