@@ -35,13 +35,13 @@ export default function NotFound() {
         </Link>
         <Link
           href="/explore"
-          className="border border-white/[0.08] text-[#F0EDE8] text-[13.5px] px-5 py-2.5 rounded-lg hover:border-white/[0.18] transition-colors"
+          className="border border-white/8 text-[#F0EDE8] text-[13.5px] px-5 py-2.5 rounded-lg hover:border-white/18 transition-colors"
         >
           Browse interviewers
         </Link>
         <Link
           href="/contact"
-          className="border border-white/[0.08] text-[#F0EDE8] text-[13.5px] px-5 py-2.5 rounded-lg hover:border-white/[0.18] transition-colors"
+          className="border border-white/8 text-[#F0EDE8] text-[13.5px] px-5 py-2.5 rounded-lg hover:border-white/18 transition-colors"
         >
           Contact support
         </Link>
@@ -49,7 +49,7 @@ export default function NotFound() {
 
       {/* Suggestions */}
       <div>
-        <p className="text-[12px] font-medium uppercase tracking-[0.1em] text-[#8A8790] mb-4">
+        <p className="text-[12px] font-medium uppercase tracking-widest text-[#8A8790] mb-4">
           You might be looking for
         </p>
         <div className="flex gap-2.5 flex-wrap justify-center">
@@ -57,7 +57,7 @@ export default function NotFound() {
             <Link
               key={s.href}
               href={s.href}
-              className="bg-white/[0.04] border border-white/[0.08] rounded-full px-4 py-1.5 text-[13px] text-[#C4C1CC] hover:border-white/[0.18] hover:text-[#F0EDE8] transition-all"
+              className="bg-white/[0.04] border border-white/8 rounded-full px-4 py-1.5 text-[13px] text-[#C4C1CC] hover:border-white/18 hover:text-[#F0EDE8] transition-all"
             >
               {s.label}
             </Link>

@@ -1,3 +1,4 @@
+import { GoldTitle } from "@/components/global/reusables";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -50,14 +51,14 @@ const providers = [
 export default function PrivacyPage() {
   return (
     <main className="min-h-screen bg-[#0A0A0F] text-[#F0EDE8]">
-      <div className="max-w-[760px] mx-auto px-10 py-14">
-        <span className="text-[11px] font-medium uppercase tracking-[0.1em] text-[#C8F04A]">
-          Legal
+      <div className="max-w-190 mx-auto px-10 py-14">
+        <span className="text-[11px] font-medium uppercase tracking-widest text-amber-400">
+          <GoldTitle>Legal</GoldTitle>
         </span>
         <h1 className="font-serif text-[38px] font-normal leading-tight mt-3.5 mb-2.5">
           Privacy Policy
         </h1>
-        <p className="text-[13px] text-[#8A8790] pb-7 mb-11 border-b border-white/[0.08]">
+        <p className="text-[13px] text-[#8A8790] pb-7 mb-11 border-b border-white/8">
           Last updated: January 14, 2025 · Effective date: January 14, 2025
         </p>
 
@@ -97,7 +98,7 @@ export default function PrivacyPage() {
                   {["Purpose", "Legal Basis", "Data Used"].map((h) => (
                     <th
                       key={h}
-                      className="text-left px-3.5 py-2.5 bg-white/[0.04] text-[#8A8790] font-medium text-[12px] uppercase tracking-[0.06em] border-b border-white/[0.08]"
+                      className="text-left px-3.5 py-2.5 bg-white/4 text-[#8A8790] font-medium text-[12px] uppercase tracking-[0.06em] border-b border-white/8"
                     >
                       {h}
                     </th>
@@ -106,7 +107,7 @@ export default function PrivacyPage() {
               </thead>
               <tbody>
                 {dataUsageTable.map((row) => (
-                  <tr key={row.purpose} className="border-b border-white/[0.06]">
+                  <tr key={row.purpose} className="border-b border-white/6">
                     <td className="px-3.5 py-2.5 text-[#B0ADB8]">{row.purpose}</td>
                     <td className="px-3.5 py-2.5 text-[#B0ADB8]">{row.basis}</td>
                     <td className="px-3.5 py-2.5 text-[#B0ADB8]">{row.data}</td>
@@ -136,7 +137,7 @@ export default function PrivacyPage() {
             We retain your data for as long as your account is active. Session
             recordings are stored for 90 days unless you delete them earlier.
             You can request full data deletion by contacting us at{" "}
-            <a href="mailto:privacy@prept.io" className="text-[#C8F04A] hover:opacity-80">
+            <a href="mailto:privacy@prept.io" className="text-amber-400 hover:opacity-80">
               privacy@prept.io
             </a>
             .
@@ -148,7 +149,7 @@ export default function PrivacyPage() {
             Depending on your jurisdiction, you have the right to access,
             correct, delete, or export your personal data. To exercise any
             right, contact{" "}
-            <a href="mailto:privacy@prept.io" className="text-[#C8F04A] hover:opacity-80">
+            <a href="mailto:privacy@prept.io" className="text-amber-400 hover:opacity-80">
               privacy@prept.io
             </a>
             .
@@ -159,7 +160,7 @@ export default function PrivacyPage() {
           <p className="body-text">
             We use essential cookies for authentication and preference storage.
             See our{" "}
-            <a href="/cookies" className="text-[#C8F04A] hover:opacity-80">
+            <a href="/cookies" className="text-amber-400 hover:opacity-80">
               Cookie Policy
             </a>{" "}
             for full details.
@@ -169,7 +170,7 @@ export default function PrivacyPage() {
         <Section title="7. Contact">
           <p className="body-text">
             Questions? Email us at{" "}
-            <a href="mailto:privacy@prept.io" className="text-[#C8F04A] hover:opacity-80">
+            <a href="mailto:privacy@prept.io" className="text-amber-400 hover:opacity-80">
               privacy@prept.io
             </a>{" "}
             or write to: Prept, c/o Rupanjan, India.

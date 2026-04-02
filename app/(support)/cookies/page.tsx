@@ -1,5 +1,7 @@
 "use client";
 
+import { GoldTitle } from "@/components/global/reusables";
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
 const cookieCategories = [
@@ -65,14 +67,14 @@ export default function CookiesPage() {
 
   return (
     <main className="min-h-screen bg-[#0A0A0F] text-[#F0EDE8]">
-      <div className="max-w-[760px] mx-auto px-10 py-14">
-        <span className="text-[11px] font-medium uppercase tracking-[0.1em] text-[#C8F04A]">
-          Legal
+      <div className="max-w-190 mx-auto px-10 py-14">
+        <span className="text-[11px] font-medium uppercase tracking-widest text-[#C8F04A]">
+          <GoldTitle>Legal</GoldTitle>
         </span>
         <h1 className="font-serif text-[38px] font-normal leading-tight mt-3.5 mb-2.5">
           Cookie Policy
         </h1>
-        <p className="text-[13px] text-[#8A8790] pb-7 mb-10 border-b border-white/[0.08]">
+        <p className="text-[13px] text-[#8A8790] pb-7 mb-10 border-b border-white/8">
           Last updated: January 14, 2025
         </p>
 
@@ -90,10 +92,10 @@ export default function CookiesPage() {
           {cookieCategories.map((cat) => (
             <div
               key={cat.id}
-              className="border border-white/[0.08] rounded-xl overflow-hidden"
+              className="border border-white/8 rounded-xl overflow-hidden"
             >
               {/* Header */}
-              <div className="flex items-center justify-between px-5 py-4 bg-white/[0.02]">
+              <div className="flex items-center justify-between px-5 py-4 bg-white/2">
                 <h3 className="text-[14.5px] font-medium text-[#F0EDE8]">
                   {cat.title}
                 </h3>
@@ -109,24 +111,24 @@ export default function CookiesPage() {
                     onClick={() => !cat.required && toggle(cat.id)}
                     disabled={cat.required}
                     aria-label={`Toggle ${cat.title}`}
-                    className={`relative w-9 h-5 rounded-full transition-colors duration-200 flex-shrink-0 ${
+                    className={`relative w-9 h-5 rounded-full transition-colors duration-200 shrink-0 ${
                       cat.required
-                        ? "bg-[#C8F04A]/30 cursor-not-allowed"
+                        ? "bg-amber-400/20 cursor-not-allowed"
                         : prefs[cat.id]
-                        ? "bg-[#C8F04A]"
+                        ? "bg-amber-400"
                         : "bg-white/20 cursor-pointer"
                     }`}
                   >
                     <span
-                      className={`absolute top-[3px] w-3.5 h-3.5 rounded-full bg-white transition-all duration-200 ${
-                        prefs[cat.id] || cat.required ? "left-[19px]" : "left-[3px]"
+                      className={`absolute top-0.75 w-3.5 h-3.5 rounded-full bg-white transition-all duration-200 ${
+                        prefs[cat.id] || cat.required ? "left-4.75" : "left-0.75"
                       }`}
                     />
                   </button>
                 </div>
               </div>
               {/* Body */}
-              <div className="px-5 py-3.5 border-t border-white/[0.08]">
+              <div className="px-5 py-3.5 border-t border-white/8">
                 <p className="text-[13.5px] text-[#B0ADB8] leading-[1.7]">
                   {cat.description}
                 </p>
@@ -136,18 +138,20 @@ export default function CookiesPage() {
         </div>
 
         <div className="flex gap-2.5">
-          <button
+          <Button
+            variant={"outline"}
             onClick={rejectAll}
-            className="px-5 py-2.5 border border-white/[0.08] rounded-lg text-[13.5px] font-medium text-[#F0EDE8] hover:border-white/[0.18] transition-colors"
+            className="px-5 py-2.5 border border-white/8 rounded-lg text-[13.5px] font-medium text-[#F0EDE8] hover:border-white/18 transition-colors"
           >
             Reject all optional
-          </button>
-          <button
+          </Button>
+          <Button
+            variant={"gold"}
             onClick={savePrefs}
-            className="px-5 py-2.5 bg-[#C8F04A] text-[#0A0A0F] rounded-lg text-[13.5px] font-medium hover:opacity-90 transition-opacity"
+            className="px-5 py-2.5"
           >
             {saved ? "Saved ✓" : "Save preferences →"}
-          </button>
+          </Button>
         </div>
       </div>
     </main>

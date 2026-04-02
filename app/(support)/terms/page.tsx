@@ -1,3 +1,4 @@
+import { GoldTitle } from "@/components/global/reusables";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -136,26 +137,26 @@ const toc = sections.map((s) => s.title);
 export default function TermsPage() {
   return (
     <main className="min-h-screen bg-[#0A0A0F] text-[#F0EDE8]">
-      <div className="max-w-[760px] mx-auto px-10 py-14">
-        <span className="text-[11px] font-medium uppercase tracking-[0.1em] text-[#C8F04A]">
-          Legal
+      <div className="max-w-190 mx-auto px-10 py-14">
+        <span className="text-[11px] font-medium uppercase tracking-widest text-amber-400">
+          <GoldTitle>LEGAL</GoldTitle>
         </span>
         <h1 className="font-serif text-[38px] font-normal leading-tight mt-3.5 mb-2.5">
           Terms of Service
         </h1>
-        <p className="text-[13px] text-[#8A8790] pb-7 mb-11 border-b border-white/[0.08]">
+        <p className="text-[13px] text-[#8A8790] pb-7 mb-11 border-b border-white/8">
           Last updated: January 14, 2025 · By using Prept, you agree to these
           terms.
         </p>
 
         {/* Table of Contents */}
-        <div className="bg-white/[0.03] border border-white/[0.08] rounded-xl px-5 py-4 mb-10">
+        <div className="bg-white/3 border border-white/8 rounded-xl px-5 py-4 mb-10">
           <p className="text-[12px] font-medium uppercase tracking-[0.08em] text-[#8A8790] mb-3">
             Table of Contents
           </p>
           <ol className="list-decimal pl-4 space-y-1">
             {toc.map((item) => (
-              <li key={item} className="text-[13.5px] text-[#C8F04A]">
+              <li key={item} className="text-[13.5px] text-amber-400">
                 {item}
               </li>
             ))}
@@ -165,7 +166,7 @@ export default function TermsPage() {
         {/* Sections */}
         {sections.map((section) => (
           <section key={section.num} className="mt-10">
-            <span className="text-[12px] font-medium uppercase tracking-[0.08em] text-[#C8F04A] block mb-1">
+            <span className="text-[12px] font-medium uppercase tracking-[0.08em] text-amber-400 block mb-1">
               {section.num}
             </span>
             <h2 className="font-serif text-[22px] font-normal text-[#F0EDE8] mb-3">

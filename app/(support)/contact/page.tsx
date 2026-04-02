@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import type { Metadata } from "next";
+import { GoldTitle } from "@/components/global/reusables";
+import { Button } from "@/components/ui/button";
 
 // Note: Can't export metadata from a "use client" component.
 // Move metadata to a wrapper server component or layout if needed.
@@ -54,14 +56,14 @@ export default function ContactPage() {
 
   return (
     <main className="min-h-screen bg-[#0A0A0F] text-[#F0EDE8]">
-      <div className="max-w-[900px] mx-auto px-10 py-14">
-        <span className="text-[11px] font-medium uppercase tracking-[0.1em] text-[#C8F04A]">
-          Get in touch
+      <div className="max-w-225 mx-auto px-10 py-14">
+        <span className="text-[11px] font-medium uppercase tracking-widest text-[#C8F04A]">
+          <GoldTitle>Get in touch</GoldTitle>
         </span>
         <h1 className="font-serif text-[38px] font-normal leading-tight mt-3.5 mb-2.5">
           Contact Us
         </h1>
-        <p className="text-[13px] text-[#8A8790] pb-7 mb-10 border-b border-white/[0.08]">
+        <p className="text-[13px] text-[#8A8790] pb-7 mb-10 border-b border-white/8">
           We typically respond within one business day.
         </p>
 
@@ -78,10 +80,10 @@ export default function ContactPage() {
                 <a
                   key={card.label}
                   href={card.href}
-                  className="flex items-start gap-3.5 bg-white/[0.03] border border-white/[0.08] rounded-xl px-5 py-4 hover:border-white/[0.14] transition-colors group"
+                  className="flex items-start gap-3.5 bg-white/3 border border-white/8 rounded-xl px-5 py-4 hover:border-white/[0.14] transition-colors group"
                 >
                   <div
-                    className={`w-9 h-9 rounded-lg ${card.colorClass} flex items-center justify-center text-base flex-shrink-0`}
+                    className={`w-9 h-9 rounded-lg ${card.colorClass} flex items-center justify-center text-base shrink-0`}
                   >
                     {card.icon}
                   </div>
@@ -97,7 +99,7 @@ export default function ContactPage() {
               ))}
             </div>
 
-            <div className="border border-white/[0.08] rounded-xl p-4">
+            <div className="border border-white/8 rounded-xl p-4">
               <p className="text-[12px] font-medium uppercase tracking-[0.08em] text-[#8A8790] mb-2">
                 Response Time
               </p>
@@ -112,7 +114,7 @@ export default function ContactPage() {
           </div>
 
           {/* Right: Form */}
-          <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-7">
+          <div className="bg-white/3 border border-white/8 rounded-2xl p-7">
             {submitted ? (
               <div className="flex flex-col items-center justify-center h-full text-center py-10">
                 <div className="w-12 h-12 rounded-full bg-[#C8F04A]/10 flex items-center justify-center text-2xl mb-4">
@@ -169,13 +171,14 @@ export default function ContactPage() {
                     />
                   </Field>
 
-                  <button
+                  <Button
                     type="submit"
+                    variant={"gold"}
                     disabled={loading}
-                    className="w-full bg-[#C8F04A] text-[#0A0A0F] font-medium text-[13.5px] py-2.5 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-60 mt-1"
+                    className="w-full py-4"
                   >
                     {loading ? "Sending..." : "Send message →"}
-                  </button>
+                  </Button>
                 </form>
               </>
             )}
