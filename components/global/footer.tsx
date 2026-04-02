@@ -1,3 +1,5 @@
+import { checkUser } from "@/lib/check.user";
+import { auth } from "@clerk/nextjs/server";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -25,12 +27,15 @@ const footerLinks = {
   ],
 };
 
-export default function Footer() {
+export default async function Footer() {
+
+  const {userId} = await auth()
+
   return (
     <footer className="bg-[#07070B] border-t border-white/20 font-sans pt-16">
       <div className="max-w-350 mx-auto px-4 sm:px-8">
         {/* Top Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-12 pb-14 border-b border-white/8">
+        <div className="grid grid-cols-2 sm:grid-cols-4 px-2 gap-12 pb-14 border-b border-white/8">
           {/* Brand Column */}
           <div className="col-span-2 sm:col-span-1 flex flex-col items-center justify-center text-center sm:block sm:text-left">
             <Link href="/">
@@ -135,17 +140,19 @@ export default function Footer() {
             </div>
 
             {/* CTA Box */}
-            <div className="bg-[#C8F04A]/5 border border-[#C8F04A]/15 rounded-xl p-5">
-              <p className="text-[13px] text-[#8A8790] leading-relaxed mb-3.5">
-                Get your first mock interview free. No card needed.
-              </p>
-              <Link
-                href="/onboarding"
-                className="inline-block bg-amber-400 text-[#0a0a0b] hover:bg-amber-300 hover:-translate-y-0.5 hover:shadow-[0_12px_36px_rgba(251,191,36,0.35)] text-[12.5px] font-medium px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"
-              >
-                Start free →
-              </Link>
-            </div>
+            {!userId && (
+              <div className="bg-[#C8F04A]/5 border border-[#C8F04A]/15 rounded-xl p-5">
+                <p className="text-[13px] text-[#8A8790] leading-relaxed mb-3.5">
+                  Get your first mock interview free. No card needed.
+                </p>
+                <Link
+                  href="/onboarding"
+                  className="inline-block bg-amber-400 text-[#0a0a0b] hover:bg-amber-300 hover:-translate-y-0.5 hover:shadow-[0_12px_36px_rgba(251,191,36,0.35)] text-[12.5px] font-medium px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"
+                >
+                  Start free →
+                </Link>
+              </div>
+            )}
           </div>
         </div>
 

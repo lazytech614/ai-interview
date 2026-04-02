@@ -12,15 +12,15 @@ export default function NotFound() {
   return (
     <main className="min-h-screen bg-[#0A0A0F] text-[#F0EDE8] flex flex-col items-center justify-center px-6 text-center">
       {/* Big number */}
-      <p className="font-serif text-[120px] text-amber-400/20 leading-none tracking-[-4px] select-none">
+      <p className="font-serif text-8xl sm:text-[120px] text-amber-400/20 leading-none tracking-[-4px] select-none">
         404
       </p>
 
-      <h2 className="font-serif text-[28px] font-normal text-[#F0EDE8] -mt-3 mb-3">
+      <h2 className="font-serif text-2xl sm:text-[28px] font-normal text-[#F0EDE8] sm:-mt-3 mb-3">
         This page took the wrong exit
       </h2>
 
-      <p className="text-[14.5px] text-[#B0ADB8] leading-[1.8] max-w-105 mb-8">
+      <p className="text-xs sm:text-[14.5px] text-[#8A8790] sm:leading-[1.8] max-w-105 mb-8">
         The page you&apos;re looking for has moved, been deleted, or never existed.
         Let&apos;s get you back on track.
       </p>
@@ -49,7 +49,7 @@ export default function NotFound() {
 
       {/* Suggestions */}
       <div>
-        <p className="text-[12px] font-medium uppercase tracking-widest text-[#8A8790] mb-4">
+        <p className="text-xs sm:text-[12px] font-medium uppercase tracking-widest text-[#8A8790] mb-4">
           You might be looking for
         </p>
         <div className="flex gap-2.5 flex-wrap justify-center">

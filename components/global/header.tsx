@@ -3,7 +3,7 @@ import { Button } from "../ui/button"
 import Link from "next/link"
 import Image from "next/image"
 import { checkUser } from "@/lib/check.user"
-import { Calendar1Icon, Users } from "lucide-react"
+import { Calendar1Icon, FileIcon, LayoutDashboard, Users } from "lucide-react"
 import RoleRedirect from "./role-redirect"
 import CreditButton from "./credit-button"
 
@@ -42,14 +42,17 @@ const Header = async () => {
             </Show>
             <Show when="signed-in">
                 {user?.role === "INTERVIEWER" && (
-                    <Button variant={"ghost"} asChild>
-                        <Link href={"/dashboard"}>Dashboard</Link>
+                    <Button variant={"outline"} asChild>
+                        <Link href={"/dashboard"}>
+                            <LayoutDashboard size={18}/>
+                            <span className="hidden sm:inline">Dashboard</span>
+                        </Link>
                     </Button>
                 )}
 
                 {user?.role === "INTERVIEWEE" && (
                     <>
-                        <Button variant={"ghost"} asChild>
+                        <Button variant={"outline"} asChild>
                             <Link href={"/explore"}>
                                 <Users size={16} />
                                 <span className="hidden sm:inline">Explore</span>
