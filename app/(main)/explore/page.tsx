@@ -6,6 +6,8 @@ const ExplorePage = async() => {
 
     const interviewers = await getInterviewers()
 
+    console.log(interviewers)
+
   return (
     <div className="min-h-screen ">
         <PageHeader

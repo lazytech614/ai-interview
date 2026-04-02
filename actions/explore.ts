@@ -68,7 +68,12 @@ export const getInterviewers = async () => {
                 yearsExp: true,
                 bio: true,
                 categories: true,
-                creditRate: true,
+                sessionRates: {
+                    select: {
+                        duration: true,
+                        credits: true
+                    }
+                },
                 availabilities: {
                 where: {
                     status: "AVAILABLE"
@@ -85,7 +90,15 @@ export const getInterviewers = async () => {
             }
         })
 
-        return interviewers
+        const ratesMap = interviewers.flatMap((interviewer) => interviewer.sessionRates).reduce((acc, rate) => {
+            acc[rate.duration] = rate.credits
+            return acc
+        }, {} as Record<number, number>)
+
+        return interviewers.map((interviewer) => ({
+            ...interviewer,
+            sessionRates: ratesMap
+        }))
     }catch(err) {
         console.error("SOMETHING WENT WRONG GETTING INTERVIEWERS", err)
         return []

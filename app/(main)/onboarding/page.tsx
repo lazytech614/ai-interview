@@ -29,7 +29,12 @@ const OnboardingPage = () => {
         company: "",
         yearsExp: 0,
         bio: "",
-        categories: [] as InterviewCategory[]
+        categories: [] as InterviewCategory[],
+        sessionRates: {
+            45: 1,
+            60: 1,
+            90: 1
+        }
     })
 
     const canSubmit = role === "INTERVIEWEE" 
@@ -39,6 +44,7 @@ const OnboardingPage = () => {
                             && form.yearsExp 
                             && form.bio.trim() 
                             && form.categories.length>0)
+                            && form.sessionRates
 
     const handleSubmit = () => {
         if(!canSubmit) return
@@ -51,7 +57,8 @@ const OnboardingPage = () => {
                     company: form.company,
                     yearsExp: form.yearsExp,
                     bio: form.bio,
-                    categories: form.categories
+                    categories: form.categories,
+                    sessionRates: form.sessionRates
                 })
             })
         }catch(err) {
@@ -129,7 +136,7 @@ const OnboardingPage = () => {
                     </div>
 
                     {/* INTERVIEWER FORM  */}
-                    {role === "INTERVIEWER" && (
+                    {role === "INTERVIEWER" && form.sessionRates && (
                         <InterviewerOnboardingForm form={form} setForm={setForm} />
                     )}
 

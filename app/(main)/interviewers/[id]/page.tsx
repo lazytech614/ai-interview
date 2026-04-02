@@ -7,7 +7,6 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { CATEGORY_LABEL, EXPECT_ITEMS } from "@/lib/data";
-import prisma from "@/lib/prisma";
 import { StarsBackgroundDemo } from "@/components/global/demo-components-background-stars";
 import { getCurrentUser } from "@/actions/user";
 import SlotPicker from "@/components/interviewers/slot-picker";
@@ -73,7 +72,7 @@ export default async function InterviewerProfilePage({ params }: any) {
                   variant="outline"
                   className="border-amber-400/25 bg-amber-400/8 text-amber-400 text-xs px-3 py-1"
                 >
-                  {interviewer.creditRate ?? 10} credits / session
+                   credits / session
                 </Badge>
                 {interviewer.availabilities?.[0] && (
                   <Badge
@@ -154,7 +153,6 @@ export default async function InterviewerProfilePage({ params }: any) {
         <div className="lg:col-span-2 lg:sticky top-24">
           <SlotPicker
             interviewer={interviewer}
-            interviewerCredits={interviewer.creditRate ?? 1}
             userCredits={dbUser.credits}
           />
         </div>

@@ -59,6 +59,37 @@ enum TransactionType {
 
 // ─── USER ────────────────────────────────────────────────
 
+// model User {
+//   id          String   @id @default(uuid())
+//   clerkUserId String   @unique
+//   email       String   @unique
+//   name        String?
+//   imageUrl    String?
+//   role        UserRole @default(UNASSIGNED)
+//   createdAt   DateTime @default(now())
+//   updatedAt   DateTime @updatedAt
+
+//   // interviewee-only
+//   credits                Int       @default(0)
+//   currentPlan            String    @default("free")
+//   creditsLastAllocatedAt DateTime?
+
+//   // interviewer-only
+//   bio           String?
+//   title         String?
+//   company       String?
+//   yearsExp      Int?
+//   categories    InterviewCategory[]
+//   creditRate    Int                 @default(1)
+//   creditBalance Int                 @default(0)
+
+//   availabilities        Availability[]
+//   bookingsAsInterviewee Booking[]           @relation("IntervieweeBookings")
+//   bookingsAsInterviewer Booking[]           @relation("InterviewerBookings")
+//   transactions          CreditTransaction[]
+//   payouts               Payout[]
+// }
+
 model User {
   id          String   @id @default(uuid())
   clerkUserId String   @unique
@@ -80,14 +111,26 @@ model User {
   company       String?
   yearsExp      Int?
   categories    InterviewCategory[]
-  creditRate    Int                 @default(1)
   creditBalance Int                 @default(0)
+
+  sessionRates SessionRate[]  
 
   availabilities        Availability[]
   bookingsAsInterviewee Booking[]           @relation("IntervieweeBookings")
   bookingsAsInterviewer Booking[]           @relation("InterviewerBookings")
   transactions          CreditTransaction[]
   payouts               Payout[]
+}
+
+model SessionRate {
+  id       String   @id @default(uuid())
+  userId   String
+  duration Int      // in minutes (45, 60, 90)
+  credits  Int
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, duration]) // one rate per duration per user
 }
 
 // ─── AVAILABILITY ────────────────────────────────────────

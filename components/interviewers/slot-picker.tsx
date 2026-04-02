@@ -37,20 +37,36 @@ type Slot = {
   available?: boolean;
 };
 
+type SessionRate = {
+  duration: number;
+  credits: number;
+};
+
 export default function SlotPicker({
   interviewer,
-  interviewerCredits,
   userCredits,
-}: any) {
+}: {
+  interviewer: any;
+  userCredits: number;
+}) {
   const router = useRouter();
   const dates = useMemo(() => generateDates(DAYS_AHEAD), []);
 
-  const [selectedDate, setSelectedDate]     = useState(dates[0]);
-  const [selectedSlot, setSelectedSlot]     = useState<Slot | null>(null);
-  const [duration, setDuration]             = useState<45 | 60 | 90>(45);
-  const [upgradeOpen, setUpgradeOpen]       = useState(false);
+  const [selectedDate, setSelectedDate] = useState(dates[0]);
+  const [selectedSlot, setSelectedSlot] = useState<Slot | null>(null);
+  const [duration, setDuration] = useState<45 | 60 | 90>(45);
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
 
   const summaryRef = useRef<HTMLDivElement | null>(null);
+
+  // Derive credits for the currently selected duration from sessionRates
+  const sessionRates: SessionRate[] = interviewer.sessionRates ?? [];
+  const currentCredits = useMemo(() => {
+    const match = sessionRates.find((r) => r.duration === duration);
+    return match?.credits ?? 0;
+  }, [sessionRates, duration]);
+
+  const canAfford = userCredits >= currentCredits;
 
   useEffect(() => {
     if (selectedSlot && summaryRef.current) {
@@ -60,11 +76,13 @@ export default function SlotPicker({
 
   const { data, loading, error, fn: bookFn } = useFetch<BookSlotResponse>(bookSlot);
 
-  const availabilities: { startTime: any; endTime: any }[] = interviewer.availabilities ?? [];
-  const canAfford = userCredits >= interviewerCredits;
+  const availabilities: { startTime: any; endTime: any }[] =
+    interviewer.availabilities ?? [];
 
-  // Reset selected slot when duration or date changes — it may no longer be valid
-  useEffect(() => { setSelectedSlot(null); }, [duration, selectedDate]);
+  // Reset selected slot when duration or date changes
+  useEffect(() => {
+    setSelectedSlot(null);
+  }, [duration, selectedDate]);
 
   const slots = useMemo(() => {
     if (!availabilities.length) return [];
@@ -72,7 +90,7 @@ export default function SlotPicker({
       selectedDate,
       availabilities,
       interviewer.bookingsAsInterviewer ?? [],
-      duration                             // pass chosen duration
+      duration
     );
   }, [selectedDate, availabilities, interviewer.bookingsAsInterviewer, duration]);
 
@@ -87,7 +105,10 @@ export default function SlotPicker({
 
   const handleSlotClick = (slot: Slot) => {
     if (!slot.available) return;
-    if (!canAfford) { setUpgradeOpen(true); return; }
+    if (!canAfford) {
+      setUpgradeOpen(true);
+      return;
+    }
     setSelectedSlot((prev) =>
       prev?.startTime.getTime() === slot.startTime.getTime() ? null : slot
     );
@@ -98,8 +119,8 @@ export default function SlotPicker({
     bookFn({
       interviewerId: interviewer.id,
       startTime: selectedSlot.startTime.toISOString(),
-      endTime:   selectedSlot.endTime.toISOString(),
-      duration,                            // send duration to server action
+      endTime: selectedSlot.endTime.toISOString(),
+      duration,
     });
   };
 
@@ -118,7 +139,7 @@ export default function SlotPicker({
       <UpgradeModal
         open={upgradeOpen}
         onOpenChange={setUpgradeOpen}
-        reason={`You need ${interviewerCredits} credits to book this session. Your current balance is ${userCredits}.`}
+        reason={`You need ${currentCredits} credits to book this session. Your current balance is ${userCredits}.`}
       />
 
       <div className="flex flex-col gap-4">
@@ -134,10 +155,11 @@ export default function SlotPicker({
                 Choose a duration, date, and time slot.
               </p>
             </div>
+            {/* Cost badge — updates reactively with duration */}
             <div className="text-right shrink-0">
               <p className="text-xs text-stone-600">Cost</p>
               <p className="font-serif text-2xl leading-none bg-linear-to-br from-amber-300 to-amber-500 bg-clip-text text-transparent">
-                {interviewerCredits}
+                {currentCredits > 0 ? currentCredits : "—"}
                 <span className="text-xs font-sans text-stone-500 ml-1">cr</span>
               </p>
             </div>
@@ -149,20 +171,36 @@ export default function SlotPicker({
               Session duration
             </p>
             <div className="flex gap-2">
-              {DURATION_OPTIONS.map((opt) => (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => setDuration(opt.value as 45 | 60 | 90)}
-                  className={`flex-1 py-2.5 rounded-xl border text-xs font-medium transition-all duration-200 ${
-                    duration === opt.value
-                      ? "border-amber-400/50 bg-amber-400/10 text-amber-400"
-                      : "border-white/10 text-stone-500 hover:border-white/20 hover:text-stone-400"
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              ))}
+              {DURATION_OPTIONS.map((opt) => {
+                const rateCredits = sessionRates.find(
+                  (r) => r.duration === opt.value
+                )?.credits;
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setDuration(opt.value as 45 | 60 | 90)}
+                    className={`flex-1 py-2.5 rounded-xl border text-xs font-medium transition-all duration-200 flex flex-col items-center gap-0.5 ${
+                      duration === opt.value
+                        ? "border-amber-400/50 bg-amber-400/10 text-amber-400"
+                        : "border-white/10 text-stone-500 hover:border-white/20 hover:text-stone-400"
+                    }`}
+                  >
+                    <span>{opt.label}</span>
+                    {rateCredits !== undefined && (
+                      <span
+                        className={`text-[10px] ${
+                          duration === opt.value
+                            ? "text-amber-500/70"
+                            : "text-stone-700"
+                        }`}
+                      >
+                        {rateCredits} cr
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -171,7 +209,7 @@ export default function SlotPicker({
           {/* Date tabs */}
           <div className="flex gap-2 overflow-x-auto pb-0.5 scrollbar-none -mx-1 px-1">
             {dates.map((date) => {
-              const label  = formatDateTab(date);
+              const label = formatDateTab(date);
               const active = date.toDateString() === selectedDate.toDateString();
               return (
                 <button
@@ -185,7 +223,11 @@ export default function SlotPicker({
                   }`}
                 >
                   <span className="font-medium">{label.top}</span>
-                  <span className={`mt-0.5 ${active ? "text-amber-500/70" : "text-stone-700"}`}>
+                  <span
+                    className={`mt-0.5 ${
+                      active ? "text-amber-500/70" : "text-stone-700"
+                    }`}
+                  >
                     {label.bottom}
                   </span>
                 </button>
@@ -203,7 +245,8 @@ export default function SlotPicker({
           ) : (
             <div className="grid grid-cols-3 gap-2">
               {slots.map((slot) => {
-                const isSelected = selectedSlot?.startTime.getTime() === slot.startTime.getTime();
+                const isSelected =
+                  selectedSlot?.startTime.getTime() === slot.startTime.getTime();
                 return (
                   <button
                     key={slot.startTime.toISOString()}
@@ -247,12 +290,15 @@ export default function SlotPicker({
             <div className="flex flex-col gap-2">
               <div className="flex justify-between text-xs">
                 <span className="text-stone-500">Date</span>
-                <span className="text-stone-300">{formatDateFull(selectedSlot.startTime)}</span>
+                <span className="text-stone-300">
+                  {formatDateFull(selectedSlot.startTime)}
+                </span>
               </div>
               <div className="flex justify-between text-xs">
                 <span className="text-stone-500">Time</span>
                 <span className="text-stone-300">
-                  {formatTime(selectedSlot.startTime)} – {formatTime(selectedSlot.endTime)}
+                  {formatTime(selectedSlot.startTime)} –{" "}
+                  {formatTime(selectedSlot.endTime)}
                 </span>
               </div>
               <div className="flex justify-between text-xs">
@@ -268,18 +314,21 @@ export default function SlotPicker({
             <div className="flex justify-between items-center">
               <span className="text-xs text-stone-400">Credits charged</span>
               <span className="font-serif text-lg bg-linear-to-br from-amber-300 to-amber-500 bg-clip-text text-transparent leading-none">
-                −{interviewerCredits}
+                −{currentCredits}
               </span>
             </div>
             <div className="flex justify-between text-xs">
               <span className="text-stone-600">Balance after</span>
-              <span className="text-stone-500">{userCredits - interviewerCredits} credits</span>
+              <span className="text-stone-500">
+                {userCredits - currentCredits} credits
+              </span>
             </div>
 
             <div className="flex items-start gap-2.5 rounded-xl border border-white/8 bg-white/2 px-3.5 py-3">
               <span className="text-sm shrink-0">🎥</span>
               <p className="text-xs text-stone-500 font-light leading-relaxed">
-                A video call room will be created and you&apos;ll be redirected immediately after confirming.
+                A video call room will be created and you&apos;ll be redirected
+                immediately after confirming.
               </p>
             </div>
 
@@ -290,10 +339,22 @@ export default function SlotPicker({
             )}
 
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" className="flex-1" disabled={loading} onClick={() => setSelectedSlot(null)}>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1"
+                disabled={loading}
+                onClick={() => setSelectedSlot(null)}
+              >
                 Change slot
               </Button>
-              <Button variant="gold" size="sm" className="flex-1" disabled={loading} onClick={handleConfirm}>
+              <Button
+                variant="gold"
+                size="sm"
+                className="flex-1"
+                disabled={loading}
+                onClick={handleConfirm}
+              >
                 {loading ? "Creating call…" : "Confirm →"}
               </Button>
             </div>

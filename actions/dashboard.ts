@@ -224,10 +224,10 @@ export const getInterviewerAppointments = async() => {
     }
 }
 
-export const getInterviewerStats = async() => {
+export const getInterviewerStats = async () => {
     try {
-        const {userId} = await auth()
-        if(!userId) throw new Error("Unauthorized")
+        const { userId } = await auth()
+        if (!userId) throw new Error("Unauthorized")
         
         const user = await prisma.user.findUnique({
             where: {
@@ -235,7 +235,12 @@ export const getInterviewerStats = async() => {
             },
             select: {
                 creditBalance: true,
-                creditRate: true,
+                sessionRates: {
+                    select: {
+                        duration: true,
+                        credits: true
+                    }
+                },
                 bookingsAsInterviewer: {
                     where: {
                         status: "COMPLETED"
@@ -246,17 +251,28 @@ export const getInterviewerStats = async() => {
                 }
             }
         })
-        if(!user) throw new Error("User not found")
 
-        const totalEarned = user.bookingsAsInterviewer.reduce((acc, booking) => acc + booking.creditsCharged, 0)
-        
+        if (!user) throw new Error("User not found")
+
+        const totalEarned = user.bookingsAsInterviewer.reduce(
+            (acc, booking) => acc + booking.creditsCharged,
+            0
+        )
+
+        // convert rates → easy object
+        const ratesMap = user.sessionRates.reduce((acc, rate) => {
+            acc[rate.duration] = rate.credits
+            return acc
+        }, {} as Record<number, number>)
+
         return {
             creditBalance: user.creditBalance,
-            creditRate: user.creditRate,
+            sessionRates: ratesMap,
             totalEarned,
-            compltedSessions: user.bookingsAsInterviewer.length
+            completedSessions: user.bookingsAsInterviewer.length
         }
-    }catch(err) {
+
+    } catch (err) {
         console.error("SOMETHING WENT WRONG GETTING STATS", err) 
         throw new Error("Something went wrong getting stats")
     }

@@ -42,7 +42,12 @@ export const getInterviewerProfile = async (id: string) => {
                 yearsExp: true,
                 bio: true,
                 categories: true,
-                creditRate: true,
+                sessionRates: {
+                    select: {
+                        duration: true,
+                        credits: true
+                    }
+                },
                 availabilities: {
                     where: {
                         status: "AVAILABLE"
@@ -117,11 +122,20 @@ export const bookSlot = async ({interviewerId, startTime, endTime, duration}: {i
             where: {
                 id: interviewerId,
                 role: "INTERVIEWER"
+            },
+            include: {
+                sessionRates: true
             }
         })
         if(!interviewer) throw new Error("Interviewer not found")
 
-        const credits = interviewer.creditRate ?? 1
+        const rate = interviewer.sessionRates.find(
+            (r) => r.duration === duration
+        )
+
+        if (!rate) throw new Error("Pricing not set for this duration")
+
+        const credits = rate.credits
 
         if(user.credits < credits) throw new Error("Insufficient credits. Please upgrade your plan.")
 

@@ -57,7 +57,6 @@ export const PLANS = [
     planId: null,
     slug: "free",
     features: [
-      "1 mock interview session",
       "45-min session duration",
       "HD video call via Stream",
       "Persistent chat thread",
@@ -71,7 +70,6 @@ export const PLANS = [
     planId: "cplan_3BikJvXfP2glCTRt5lUc2Xobgdn",
     slug: "starter",
     features: [
-      "Maximum of 6 mock interview sessions",
       "45-min or 1-hour session duration",
       "AI feedback report",
       "HD video call via Stream",
@@ -87,7 +85,6 @@ export const PLANS = [
     planId: "cplan_3BikpFV5h4XIjzkuRwXWxxoPMZS",
     slug: "pro",
     features: [
-      "Maximum of 24 mock interview sessions",
       "45-min, 1-hour, or 1.5-hour session duration",
       "AI feedback report",
       "HD video call via Stream",
