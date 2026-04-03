@@ -103,10 +103,10 @@ export default function LandingPage() {
             </div>
 
             <p className="text-sm text-stone-500 text-center sm:text-left">
+              Built for engineers preparing for&nbsp;
               <strong className="text-stone-400 font-medium">
-                2,400+ engineers
+                FAANG interviews
               </strong>{" "}
-              cracked FAANG interviews via Prept
             </p>
           </div>
         </div>
