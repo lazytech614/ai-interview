@@ -174,7 +174,7 @@ export const bookSlot = async ({interviewerId, startTime, endTime, duration}: {i
                 }
             ])
 
-            streamCallId = `mock_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`
+            streamCallId = `call_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`
 
             const call = streamClient.video.call("default", streamCallId)
 

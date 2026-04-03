@@ -18,59 +18,6 @@ const withdrawalLimiter = createRateLimitor({
   capacity: 3,
 });
 
-// export const setAvailability = async({startTime, endTime}: any) => {
-//     try {
-//         const {userId} = await auth()
-//         if(!userId) throw new Error("Unauthorized")
-        
-//         const user = await prisma.user.findUnique({
-//             where: {
-//                 clerkUserId: userId
-//             }
-//         })
-//         if(!user) throw new Error("User not found")
-//         if(user.role !== "INTERVIEWER") throw new Error("Only interviewers can set availability")
-
-//         if(!startTime || !endTime) throw new Error("Missing required fields")
-
-//         if(new Date(startTime) > new Date(endTime)) throw new Error("Start time must be before end time")
-        
-//         const existing = await prisma.availability.findFirst({
-//             where: {
-//                 interviewerId: user.id,
-//                 status: "AVAILABLE"
-//             }
-//         })
-
-//         if(existing) {
-//             await prisma.availability.update({
-//                 where: {
-//                     id: existing.id
-//                 },
-//                 data: {
-//                     startTime: new Date(startTime),
-//                     endTime: new Date(endTime)
-//                 }
-//             })
-//         }else {
-//             await prisma.availability.create({
-//                 data: {
-//                     interviewerId: user.id,
-//                     startTime: new Date(startTime),
-//                     endTime: new Date(endTime),
-//                     status: "AVAILABLE"
-//                 }
-//             })
-//         }
-
-//         revalidatePath("/dashboard")
-//         return {success: true}
-//     }catch(err) {
-//         console.error("SOMETHING WENT WRONG SETTING AVAILABILITY", err)
-//         throw new Error("Something went wrong setting availability")
-//     }
-// }
-
 export const setAvailability = async ({
   date,
   slots,

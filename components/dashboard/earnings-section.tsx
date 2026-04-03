@@ -43,7 +43,9 @@ export default function EarningsSection({ stats, history }: any) {
   const { data, loading, error, fn: withdrawFn } = useFetch(requestWithdrawal);
 
   const balance = (stats?.creditBalance ?? 0) * 5;
-  const totalEarnedDollars = (stats?.totalEarned ?? 0) * 5;
+  const totalEarnedDollars = history
+  .filter((item: any) => item.status === "PROCESSED")
+  .reduce((sum: number, item: any) => sum + item.netAmount, 0);
   const feeAmount = (balance * PLATFORM_FEE).toFixed(2);
   const netAmount = (balance * (1 - PLATFORM_FEE)).toFixed(2);
   const selectedMethod = PAYMENT_METHODS.find((m) => m.value === method);

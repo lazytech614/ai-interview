@@ -312,7 +312,7 @@ Analyze the candidate's performance. Respond ONLY with a valid JSON object, no m
             }),
             prisma.user.update({
                 where: { id: booking.interviewer.id },
-                data: { credits: { increment: booking.creditsCharged } },
+                data: { creditBalance: { increment: booking.creditsCharged } },
             }),
         ]);
         console.log(
