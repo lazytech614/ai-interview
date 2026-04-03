@@ -84,7 +84,6 @@ model User {
   yearsExp      Int?
   categories    InterviewCategory[]
   creditBalance Int                 @default(0)
-
   sessionRates SessionRate[]  
 
   availabilities        Availability[]
