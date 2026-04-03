@@ -1,6 +1,6 @@
 const SupportLayout = ({children}: {children: React.ReactNode}) => {
   return (
-    <div className="mt-16 bg-black">{children}</div>
+    <div className="py-18 bg-black">{children}</div>
   )
 }
 

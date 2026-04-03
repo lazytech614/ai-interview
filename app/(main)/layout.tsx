@@ -1,6 +1,6 @@
 const MainLayout = ({children}: any) => {
   return (
-    <div className="my-16 bg-black">
+    <div className="py-18 bg-black">
         {children}
     </div>
   )

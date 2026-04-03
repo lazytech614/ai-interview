@@ -46,7 +46,7 @@ export default function InterviewerCard({ interviewer }: any) {
 
       <CardContent className="flex flex-col gap-5">
         {/* Top row — avatar + name + years */}
-        <div className="flex items-start justify-between gap-3">
+        <div className="flex items-start justify-between gap-3 min-h-15">
           <div className="flex items-center gap-3">
             <Avatar className="w-11 h-11 border border-white/10 shrink-0">
               <AvatarImage src={imageUrl} alt={name} />
@@ -78,7 +78,7 @@ export default function InterviewerCard({ interviewer }: any) {
 
         {/* Bio */}
         {bio && (
-          <p className="text-xs text-stone-400 font-light leading-relaxed line-clamp-2">
+          <p className="text-xs text-stone-400 font-light leading-relaxed line-clamp-2 min-h-10">
             {bio}
           </p>
         )}
@@ -125,7 +125,7 @@ export default function InterviewerCard({ interviewer }: any) {
         <Separator />
 
         {/* Bottom row — starting from + availability + CTA */}
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex items-start justify-between gap-3">
           <div className="flex flex-col gap-1">
             {lowestCredits !== undefined && (
               <p className="text-sm font-serif leading-none text-stone-400">
