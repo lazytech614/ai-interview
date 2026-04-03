@@ -235,16 +235,16 @@ export const bookSlot = async ({interviewerId, startTime, endTime, duration}: {i
                     }
                 })
 
-                await tx.user.update({
-                    where: {
-                        id: interviewerId
-                    },
-                    data: {
-                        creditBalance: {
-                            increment: credits
-                        }
-                    }
-                })
+                // await tx.user.update({
+                //     where: {
+                //         id: interviewerId
+                //     },
+                //     data: {
+                //         creditBalance: {
+                //             increment: credits
+                //         }
+                //     }
+                // })
 
                 return newBooking
             })
@@ -347,14 +347,14 @@ export const cancelSlot = async (bookingId: string) => {
         }
 
         // Deduct from interviewer earnings 
-        await tx.user.update({
-          where: { id: booking.interviewerId },
-          data: {
-            creditBalance: {
-              decrement: booking.creditsCharged,
-            },
-          },
-        });
+        // await tx.user.update({
+        //   where: { id: booking.interviewerId },
+        //   data: {
+        //     creditBalance: {
+        //       decrement: booking.creditsCharged,
+        //     },
+        //   },
+        // });
 
 
         // Update availability of the interviewer

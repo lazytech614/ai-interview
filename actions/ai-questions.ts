@@ -34,7 +34,7 @@ export const generateInterviewQuestions = async ({category}: any) => {
 
         if(!category || !CATEGORY_PROMPTS[category as keyof typeof CATEGORY_PROMPTS]) throw new Error("Invalid category")
 
-        const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_LEY!)
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
         const model = genAI.getGenerativeModel({
             model: "gemini-2.5-flash-lite"
         })

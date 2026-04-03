@@ -19,6 +19,8 @@ enum BookingStatus {
   SCHEDULED
   COMPLETED
   CANCELLED
+  PROCESSING
+  UPCOMING
 }
 
 enum AvailabilityStatus {
@@ -135,6 +137,7 @@ model Booking {
   cancelledBy    String?       // "INTERVIEWEE" | "INTERVIEWER"
   cancelledAt    DateTime?
   refundCredits  Int?
+  endedAt        DateTime?
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 
@@ -173,6 +176,8 @@ model CreditTransaction {
   bookingId String?
   booking   Booking?        @relation(fields: [bookingId], references: [id])
   createdAt DateTime        @default(now())
+
+  @@unique([bookingId, type])
 }
 
 // ─── PAYOUTS ─────────────────────────────────────────────
