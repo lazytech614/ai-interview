@@ -40,6 +40,19 @@ export function AppointmentCard({ booking, mode, isPast = false }: any) {
 
   const isUpcoming = status === "SCHEDULED";
 
+  const now = new Date();
+  const start = new Date(startTime);
+  const end = new Date(endTime);
+
+  // 15 minutes before start
+  const joinWindowStart = new Date(start.getTime() - 15 * 60 * 1000);
+
+  const canJoinCall =
+    streamCallId &&
+    isUpcoming &&
+    now >= joinWindowStart &&
+    now <= end;
+
   return (
     <>
       <FeedbackModal
@@ -158,12 +171,34 @@ export function AppointmentCard({ booking, mode, isPast = false }: any) {
 
         {(streamCallId || recordingUrl || feedback) && (
           <div className="flex items-center gap-2 flex-wrap pt-1">
-            {!isPast && streamCallId && isUpcoming && (
+            {/* {!isPast && streamCallId && isUpcoming && (
               <Button variant="gold" size="sm" className="gap-2" asChild>
                 <Link href={`/call/${streamCallId}`}>
                   <Video size={13} />
                   Join call
                 </Link>
+              </Button>
+            )} */}
+
+            {!isPast && streamCallId && isUpcoming && (
+              <Button
+                variant="gold"
+                size="sm"
+                className="gap-2"
+                disabled={!canJoinCall}
+                asChild={canJoinCall}
+              >
+                {canJoinCall ? (
+                  <Link href={`/call/${streamCallId}`} className="flex items-center gap-1">
+                    <Video size={13} />
+                    Join call
+                  </Link>
+                ) : (
+                  <>
+                    <Video size={13} />
+                    Join in 15 min window
+                  </>
+                )}
               </Button>
             )}
 

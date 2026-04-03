@@ -29,7 +29,7 @@ export default function CreditButton({ role, credits }: any) {
         </span>
       </Button>
 
-      <UpgradeModal open={open} onOpenChange={setOpen} />
+      <UpgradeModal open={open} onOpenChange={setOpen} credits={credits} />
     </>
   );
 }

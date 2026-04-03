@@ -31,7 +31,7 @@ export const getIntervieweeAppointments = async () => {
                         yearsExp: true
                     }
                 },
-                feedback: true
+                feedback: true,
             },
             orderBy: {
                 createdAt: "desc"

@@ -10,7 +10,7 @@ import {
 import { AlertCircle } from "lucide-react";
 import PricingSection from "../landing/pricing-section";
 
-export default function UpgradeModal({ open, onOpenChange, reason }: any) {
+export default function UpgradeModal({ open, onOpenChange, reason, credits }: any) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="border-amber-200/10 min-w-[70vw] max-h-[90vh] overflow-y-scroll">
@@ -21,11 +21,14 @@ export default function UpgradeModal({ open, onOpenChange, reason }: any) {
               <DialogTitle className="font-serif text-2xl">
                 Upgrade your plan
               </DialogTitle>
-              {reason && (
                 <DialogDescription className="text-amber-400 mt-1">
-                  {reason}
+                  {reason ? (
+                    <p>{reason}</p>
+                  ) : (
+                    <p>Your plan has {credits} credits left</p>
+                  )}
                 </DialogDescription>
-              )}
+            
             </div>
           </div>
         </DialogHeader>

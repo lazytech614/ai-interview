@@ -12,6 +12,7 @@ export default async function MyAppointmentsPage() {
   if (!user) redirect("/");
 
   const appointments = await getIntervieweeAppointments();
+
   const now = new Date();
   const scheduled = appointments.filter(
     (a) => a.status === "SCHEDULED" && new Date(a.startTime) > now
