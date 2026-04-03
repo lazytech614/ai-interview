@@ -1,13 +1,9 @@
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import PageHeader from "@/components/global/reusables";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ClipboardList, Clock, Wallet } from "lucide-react";
 import { getCurrentUser } from "@/actions/user";
-import AppointmentsSection from "@/components/dashboard/appointments-section";
-import AvailabilitySection from "@/components/dashboard/availability-section";
-import EarningsSection from "@/components/dashboard/earnings-section";
 import { getAvailability, getInterviewerAppointments, getInterviewerStats, getWithdrawalHistory } from "@/actions/dashboard";
+import { DashboardTabs } from "@/components/dashboard/dashboard-tabs";
 
 export default async function InterviewerDashboardPage() {
   const user = await currentUser();
@@ -25,7 +21,6 @@ export default async function InterviewerDashboardPage() {
 
   return (
     <main className="min-h-screen bg-black">
-      {/* Page header */}
       <PageHeader
         label="Interviewer dashboard"
         gray="Welcome back,"
@@ -36,43 +31,22 @@ export default async function InterviewerDashboardPage() {
             : undefined
         }
         right={
-          <div>
+          <div className="mt-2 sm:mt-0">
             <p className="text-xs text-stone-600">Credit balance</p>
-            <p className="font-serif text-3xl leading-none bg-linear-to-br from-amber-300 to-amber-500 bg-clip-text text-transparent text-right">
+            <p className="font-serif text-3xl leading-none bg-linear-to-br from-amber-300 to-amber-500 bg-clip-text text-transparent sm:text-right">
               {stats?.creditBalance ?? 0}
             </p>
           </div>
         }
       />
 
-      {/* Tabbed content */}
-      <div className="max-w-6xl mx-auto px-8 py-10">
-        <Tabs defaultValue="earnings">
-          <TabsList className="bg-[#0f0f11] border border-white/10 mb-8 w-full">
-            <TabsTrigger value="earnings" className="p-5">
-              <Wallet size={16} className="text-amber-400" /> Earnings
-            </TabsTrigger>
-            <TabsTrigger value="appointments" className="p-5">
-              <ClipboardList size={18} className="text-amber-400" />{" "}
-              Appointments
-            </TabsTrigger>
-            <TabsTrigger value="availability" className="p-5">
-              <Clock size={18} className="text-amber-400" /> Availability
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="appointments">
-            <AppointmentsSection appointments={appointments} />
-          </TabsContent>
-
-          <TabsContent value="availability">
-            <AvailabilitySection initial={availability} />
-          </TabsContent>
-
-          <TabsContent value="earnings">
-            <EarningsSection stats={stats} history={withdrawalHistory} />
-          </TabsContent>
-        </Tabs>
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 py-10">
+        <DashboardTabs
+          appointments={appointments}
+          availability={availability}
+          stats={stats}
+          withdrawalHistory={withdrawalHistory}
+        />
       </div>
     </main>
   );

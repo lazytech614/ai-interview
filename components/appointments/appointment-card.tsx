@@ -34,6 +34,7 @@ export function AppointmentCard({ booking, mode, isPast = false }: any) {
     streamCallId,
     recordingUrl,
     feedback,
+    interviewerId
   } = booking;
 
   const person =
@@ -97,7 +98,7 @@ export function AppointmentCard({ booking, mode, isPast = false }: any) {
 
             <div className="flex flex-col gap-1 min-w-0">
               <p className="text-base font-medium text-stone-200 leading-tight truncate">
-                {person?.name ?? "—"}
+                <Link href={`/interviewers/${interviewerId}`} className="underline hover:text-amber-400 transition-all duration-200">{person?.name ?? "—"}</Link>
               </p>
               {person?.title && person?.company ? (
                 <p className="text-xs text-stone-500 truncate">
@@ -273,7 +274,15 @@ export function AppointmentCard({ booking, mode, isPast = false }: any) {
                     open={openCancelDialog}
                     onOpenChange={setOpenCancelDialog}
                     title="Cancel this session?"
-                    description="You may receive partial or full refund based on cancellation time."
+                    description={
+                      <>
+                        You may receive partial or full refund based on cancellation time. For
+                        more details please refer to our{" "}
+                        <Link href="/refund" className="text-amber-400 underline">
+                          refund policy
+                        </Link>
+                      </>
+                    }
                     confirmText="Yes, Cancel"
                     cancelText="Keep Session"
                     variant="destructive"

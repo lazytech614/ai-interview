@@ -22,6 +22,7 @@ export const getIntervieweeAppointments = async () => {
             include: {
                 interviewer: {
                     select: {
+                        id: true,
                         name: true,
                         imageUrl: true,
                         email: true,
