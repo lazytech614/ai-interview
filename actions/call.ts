@@ -54,7 +54,7 @@ export const getCallData = async(callId: string) => {
         )
         
         const token = streamClient.generateUserToken({
-            user_id: user.id,
+            user_id: user.clerkUserId,
             validity_in_seconds: 60 * 60
         })
 
@@ -62,7 +62,7 @@ export const getCallData = async(callId: string) => {
             token,
             isInterviewer,
             currentUser: {
-                id: user.id,
+                id: user.clerkUserId,
                 name: user.name,
                 imageUrl: user.imageUrl
             },

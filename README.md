@@ -2,8 +2,6 @@
 
 <img src="public/logo.png" alt="Prept Logo" width="80" />
 
-# Prept
-
 ### Book 1:1 mock interviews with senior engineers. Get AI-powered feedback. Land your dream job.
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-ai--interview--lilac--nine.vercel.app-amber?style=for-the-badge&logo=vercel&logoColor=white)](https://ai-interview-lilac-nine.vercel.app)

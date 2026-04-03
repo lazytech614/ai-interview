@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { AppointmentCard } from "@/components/appointments/appointment-card";
 import { Button } from "@/components/ui/button";
@@ -33,6 +33,10 @@ export function AppointmentsClient({ appointments }: { appointments: any[] }) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
 
+  // ✅ Pagination state
+  const ITEMS_PER_PAGE = 6;
+  const [page, setPage] = useState(1);
+
   const now = new Date();
 
   const upcoming = useMemo(
@@ -51,7 +55,8 @@ export function AppointmentsClient({ appointments }: { appointments: any[] }) {
     [appointments]
   );
 
-  const baseList = tab === "upcoming" ? upcoming : tab === "past" ? past : appointments;
+  const baseList =
+    tab === "upcoming" ? upcoming : tab === "past" ? past : appointments;
 
   const filtered = useMemo(() => {
     let list = baseList;
@@ -72,6 +77,19 @@ export function AppointmentsClient({ appointments }: { appointments: any[] }) {
     return list;
   }, [baseList, statusFilter, search]);
 
+  // ✅ Reset page when filters change
+  useEffect(() => {
+    setPage(1);
+  }, [tab, search, statusFilter]);
+
+  // ✅ Pagination logic
+  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+
+  const paginated = filtered.slice(
+    (page - 1) * ITEMS_PER_PAGE,
+    page * ITEMS_PER_PAGE
+  );
+
   const isPast = tab === "past";
   const hasFilters = search.trim() || statusFilter !== "ALL";
 
@@ -87,7 +105,9 @@ export function AppointmentsClient({ appointments }: { appointments: any[] }) {
           <CalendarDays size={28} className="text-amber-400" />
         </span>
         <div>
-          <p className="text-base text-stone-400 font-light">No sessions booked yet.</p>
+          <p className="text-base text-stone-400 font-light">
+            No sessions booked yet.
+          </p>
           <p className="text-sm text-stone-600 mt-1">
             Browse expert interviewers and book your first session.
           </p>
@@ -103,17 +123,15 @@ export function AppointmentsClient({ appointments }: { appointments: any[] }) {
     <div className="flex flex-col gap-8">
       {/* ── Tabs ── */}
       <div className="flex items-center gap-1 p-1 bg-white/3 border border-white/8 rounded-xl w-fit">
-        {(
-          [
-            { key: "upcoming", label: "Upcoming", count: upcoming.length },
-            { key: "past", label: "Past", count: past.length },
-            { key: "all", label: "All", count: appointments.length },
-          ] as { key: Tab; label: string; count: number }[]
-        ).map(({ key, label, count }) => (
+        {[
+          { key: "upcoming", label: "Upcoming", count: upcoming.length },
+          { key: "past", label: "Past", count: past.length },
+          { key: "all", label: "All", count: appointments.length },
+        ].map(({ key, label, count }) => (
           <button
             key={key}
-            onClick={() => setTab(key)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+            onClick={() => setTab(key as Tab)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
               tab === key
                 ? "bg-amber-400/15 text-amber-300 border border-amber-400/25"
                 : "text-stone-500 hover:text-stone-300 hover:bg-white/5"
@@ -121,7 +139,7 @@ export function AppointmentsClient({ appointments }: { appointments: any[] }) {
           >
             {label}
             <span
-              className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md min-w-5 text-center ${
+              className={`text-[10px] px-1.5 py-0.5 rounded-md ${
                 tab === key
                   ? "bg-amber-400/20 text-amber-300"
                   : "bg-white/5 text-stone-600"
@@ -133,23 +151,20 @@ export function AppointmentsClient({ appointments }: { appointments: any[] }) {
         ))}
       </div>
 
-      {/* ── Search + Filter bar ── */}
+      {/* ── Search + Filters ── */}
       <div className="flex items-center gap-3 flex-wrap">
-        <div className="relative flex-1 min-w-55] max-w-sm">
-          <Search
-            size={14}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-600 pointer-events-none"
-          />
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-600" size={14} />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by name…"
-            className="pl-8 pr-8 bg-white/3 border-white/10 text-stone-300 placeholder:text-stone-600 focus-visible:ring-amber-400/30 focus-visible:border-amber-400/30 h-9 text-sm rounded-xl"
+            className="pl-8 pr-8 bg-white/3 border-white/10 text-stone-300 h-9 text-sm rounded-xl"
           />
           {search && (
             <button
               onClick={() => setSearch("")}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-600 hover:text-stone-400 transition-colors"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-600"
             >
               <X size={13} />
             </button>
@@ -158,31 +173,19 @@ export function AppointmentsClient({ appointments }: { appointments: any[] }) {
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button
-              variant="outline"
-              size="sm"
-              className={`gap-2 h-9 rounded-xl border-white/10 bg-white/3 text-stone-400 hover:text-stone-200 hover:bg-white/8 hover:border-white/20 ${
-                statusFilter !== "ALL"
-                  ? "border-amber-400/30 text-amber-400 bg-amber-400/5"
-                  : ""
-              }`}
-            >
+            <Button variant="outline" size="sm" className="h-9">
               <SlidersHorizontal size={13} />
               {statusFilter === "ALL"
                 ? "Status"
                 : STATUS_OPTIONS.find((o) => o.value === statusFilter)?.label}
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="start"
-            className="bg-[#111113] border border-white/10 text-stone-300"
-          >
+          <DropdownMenuContent>
             {STATUS_OPTIONS.map((opt) => (
               <DropdownMenuCheckboxItem
                 key={opt.value}
                 checked={statusFilter === opt.value}
                 onCheckedChange={() => setStatusFilter(opt.value)}
-                className="focus:bg-white/8 focus:text-stone-200 cursor-pointer"
               >
                 {opt.label}
               </DropdownMenuCheckboxItem>
@@ -191,48 +194,74 @@ export function AppointmentsClient({ appointments }: { appointments: any[] }) {
         </DropdownMenu>
 
         {hasFilters && (
-          <button
-            onClick={clearFilters}
-            className="text-xs text-stone-600 hover:text-stone-400 flex items-center gap-1 transition-colors"
-          >
-            <X size={11} />
+          <button onClick={clearFilters} className="text-xs text-stone-500">
             Clear
           </button>
         )}
-
-        <p className="text-xs text-stone-600 ml-auto">
-          {filtered.length} session{filtered.length !== 1 ? "s" : ""}
-        </p>
       </div>
 
       {/* ── Results ── */}
-      {filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 gap-4 text-center">
-          <span className="w-12 h-12 rounded-xl bg-white/5 border border-white/8 flex items-center justify-center">
-            <Search size={20} className="text-stone-600" />
-          </span>
-          <div>
-            <p className="text-sm text-stone-500">No sessions match your filters.</p>
-            {hasFilters && (
-              <button
-                onClick={clearFilters}
-                className="text-xs text-amber-400/70 hover:text-amber-400 mt-1 transition-colors"
-              >
-                Clear filters
-              </button>
-            )}
-          </div>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {filtered.map((b) => (
-            <AppointmentCard
-              key={b.id}
-              booking={b}
-              mode="interviewee"
-              isPast={isPast || b.status !== "SCHEDULED" || new Date(b.endTime) <= now}
-            />
-          ))}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {paginated.map((b) => (
+          <AppointmentCard
+            key={b.id}
+            booking={b}
+            mode="interviewee"
+            isPast={isPast || new Date(b.endTime) <= now}
+          />
+        ))}
+      </div>
+
+      {/* ── Pagination ── */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 mt-6 flex-wrap">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page === 1}
+            onClick={() => setPage((p) => p - 1)}
+          >
+            ← Prev
+          </Button>
+
+          {Array.from({ length: totalPages }).map((_, i) => {
+            const p = i + 1;
+
+            if (
+              p === 1 ||
+              p === totalPages ||
+              Math.abs(p - page) <= 1
+            ) {
+              return (
+                <button
+                  key={p}
+                  onClick={() => setPage(p)}
+                  className={`px-3 py-1 text-sm rounded-md border ${
+                    page === p
+                      ? "bg-amber-400 text-black"
+                      : "border-white/10 text-stone-400"
+                  }`}
+                >
+                  {p}
+                </button>
+              );
+            }
+
+            if (p === page - 2 || p === page + 2) {
+              return <span key={p}>...</span>;
+            }
+
+            return null;
+          })}
+
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page === totalPages}
+            onClick={() => setPage((p) => p + 1)}
+          >
+            Next →
+          </Button>
         </div>
       )}
     </div>

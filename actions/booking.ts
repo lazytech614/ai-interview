@@ -164,19 +164,23 @@ export const bookSlot = async ({interviewerId, startTime, endTime, duration}: {i
                     id: user.clerkUserId,
                     name: user.name ?? "Interviewee",
                     image: user.imageUrl ?? undefined,
-                    role: "user"
+                    // role: "user"
                 },
                 {
                     id: interviewer.clerkUserId,
                     name: interviewer.name ?? "Interviewer",
                     image: interviewer.imageUrl ?? undefined,
-                    role: "user"
+                    // role: "user"
                 }
             ])
 
             streamCallId = `mock_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`
 
             const call = streamClient.video.call("default", streamCallId)
+
+            if (!user.clerkUserId || !interviewer.clerkUserId) {
+                throw new Error("Missing Stream user IDs");
+            }
 
             await call.getOrCreate({
                 data: {
