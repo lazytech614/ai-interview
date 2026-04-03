@@ -47,12 +47,12 @@ const CallPage = async({params}: any) => {
 
   return (
     <CallRoom 
-        token={token} 
-        isInterviewer={isInterviewer} 
+        token={token!} 
+        isInterviewer={isInterviewer!} 
         currentUser={currentUser} 
         booking={booking} 
         callId={callId}
-        apiKey={process.env.NEXT_PUBLIC_STREAM_API_KEY}
+        apiKey={process.env.NEXT_PUBLIC_STREAM_API_KEY!}
     />
   )
 }

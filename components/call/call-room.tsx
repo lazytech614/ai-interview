@@ -3,12 +3,11 @@
 import { useEffect, useCallback, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 
-// Stream Video
 import {
   StreamVideoClient,
   StreamVideo,
   StreamCall,
-  Call
+  Call,
 } from "@stream-io/video-react-sdk";
 import "@stream-io/video-react-sdk/dist/css/styles.css";
 import "stream-chat-react/dist/css/v2/index.css";
@@ -16,6 +15,14 @@ import "stream-chat-react/dist/css/v2/index.css";
 import { Loader2 } from "lucide-react";
 import CallUI from "./call-ui";
 
+interface CallRoomProps {
+  token: string;
+  isInterviewer: boolean;
+  currentUser: any;
+  booking: any;
+  callId: string;
+  apiKey: string;
+}
 
 export default function CallRoom({
   callId,
@@ -24,7 +31,7 @@ export default function CallRoom({
   currentUser,
   booking,
   isInterviewer,
-}: any) {
+}: CallRoomProps) {
   const router = useRouter();
   const [videoClient, setVideoClient] = useState<StreamVideoClient | null>(null);
   const [call, setCall] = useState<Call | null>(null);
@@ -32,7 +39,6 @@ export default function CallRoom({
   const joinedRef = useRef(false);
 
   useEffect(() => {
-    // Guard against React StrictMode double-invoke in development
     if (joinedRef.current) return;
     joinedRef.current = true;
 
@@ -61,16 +67,9 @@ export default function CallRoom({
       callInstance.leave().catch(() => {});
       client.disconnectUser().catch(() => {});
       clientRef.current = null;
-      joinedRef.current = false; // reset so hot reload works
+      joinedRef.current = false;
     };
-  }, [
-    apiKey,
-    callId,
-    currentUser.id,
-    currentUser.imageUrl,
-    currentUser.name,
-    token,
-  ]);
+  }, [apiKey, callId, currentUser.id, currentUser.imageUrl, currentUser.name, token]);
 
   const handleLeave = useCallback(() => {
     router.push(isInterviewer ? "/dashboard" : "/appointments");

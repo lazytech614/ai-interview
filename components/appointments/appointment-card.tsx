@@ -194,10 +194,10 @@ export function AppointmentCard({ booking, mode, isPast = false }: any) {
                 variant="gold"
                 size="sm"
                 className="gap-2"
-                disabled={!canJoinCall}
+                disabled={canJoinCall}
                 asChild={canJoinCall}
               >
-                {canJoinCall ? (
+                {!canJoinCall ? (
                   <Link href={`/call/${streamCallId}`} className="flex items-center gap-1">
                     <Video size={13} />
                     Join call

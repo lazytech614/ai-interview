@@ -25,9 +25,12 @@ import {
 import "stream-chat-react/dist/css/v2/index.css";
 
 import { Badge } from "@/components/ui/badge";
-import { MessageSquare, Sparkles, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { MessageSquare, Sparkles, Loader2, Code2 } from "lucide-react";
 import type { Channel as StreamChannel } from "stream-chat";
 import AIQuestionsPanel from "./ai-questions";
+import { CodeEditor } from "./code-editor";
+import { ProblemPanel } from "./problem-panel";
 
 export default function CallUI({
   callId,
@@ -43,6 +46,7 @@ export default function CallUI({
   const callingState = useCallCallingState();
 
   const [activeTab, setActiveTab] = useState("chat");
+  const [showEditor, setShowEditor] = useState(false);
 
   // Auto-stop recording before leaving
   const handleLeave = useCallback(async () => {
@@ -59,7 +63,7 @@ export default function CallUI({
     }
   }, [call, onLeave]);
 
-  // ── Chat client — same token works for both Video + Chat SDKs ──
+  // ── Chat client ──
   const chatClient = useCreateChatClient({
     apiKey,
     tokenOrProvider: token,
@@ -76,7 +80,6 @@ export default function CallUI({
     if (!chatClient) return;
 
     const channel = chatClient.channel("messaging", callId, {
-    //   name: "Interview Chat",
       members: [
         booking.interviewer.clerkUserId,
         booking.interviewee.clerkUserId,
@@ -103,7 +106,7 @@ export default function CallUI({
 
   return (
     <div className="min-h-[92vh] bg-[#0a0a0b] flex flex-col overflow-hidden">
-      {/* Top bar */}
+      {/* ── Top bar ── */}
       <div className="flex items-center justify-between px-6 py-3 border-b border-white/8 shrink-0">
         <div className="flex items-center gap-2">
           <Badge
@@ -123,76 +126,102 @@ export default function CallUI({
             </Badge>
           )}
         </div>
+
+        {/* Code Editor toggle */}
+        <Button
+          variant={showEditor ? "gold" : "outline"}
+          size="sm"
+          onClick={() => setShowEditor((v) => !v)}
+          className={`gap-2 text-xs ${
+            showEditor
+              ? ""
+              : "border-white/10 bg-white/3 text-stone-400 hover:text-stone-200 hover:border-white/20"
+          }`}
+        >
+          <Code2 size={13} />
+          {showEditor ? "Hide Editor" : "Code Editor"}
+        </Button>
       </div>
 
-      {/* Body: video + side panel */}
-      <div className="flex flex-col md:flex-row flex-1 min-h-0">
-        {/* ── LEFT: Video ── */}
-        <div className="flex flex-col md:flex-1 min-w-0">
-          <StreamTheme>
-            <SpeakerLayout  />
-            <CallControls onLeave={handleLeave} />
-          </StreamTheme>
-        </div>
+      {/* ── Main body ── */}
+      <div className="flex flex-col flex-1 min-h-0">
 
-        {/* ── RIGHT: Chat / AI panel ── */}
-        <div className="w-full md:w-85 shrink-0 flex flex-col border-l border-white/8 bg-[#0a0a0b]">
-          {/* Tab switcher */}
-          <div className="flex border-b border-white/8 shrink-0">
-            <button
-              type="button"
-              onClick={() => setActiveTab("chat")}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 text-xs font-medium transition-colors ${
-                activeTab === "chat"
-                  ? "text-amber-400 border-b-2 border-amber-400"
-                  : "text-stone-500 hover:text-stone-300"
-              }`}
-            >
-              <MessageSquare size={13} />
-              Chat
-            </button>
+        {/* Video + side panel row */}
+        <div className="flex flex-col md:flex-row flex-1 min-h-0">
+          {/* LEFT: Video */}
+          <div className="flex flex-col md:flex-1 min-w-0">
+            <StreamTheme>
+              <SpeakerLayout />
+              <CallControls onLeave={handleLeave} />
+            </StreamTheme>
+          </div>
 
-            {/* AI Questions tab — interviewer only */}
-            {isInterviewer && (
+          {/* RIGHT: Chat / AI panel */}
+          <div className="w-full md:w-85 shrink-0 flex flex-col border-l border-white/8 bg-[#0a0a0b]">
+            {/* Tab switcher */}
+            <div className="flex border-b border-white/8 shrink-0">
               <button
                 type="button"
-                onClick={() => setActiveTab("ai")}
+                onClick={() => setActiveTab("chat")}
                 className={`flex-1 flex items-center justify-center gap-2 py-3 text-xs font-medium transition-colors ${
-                  activeTab === "ai"
+                  activeTab === "chat"
                     ? "text-amber-400 border-b-2 border-amber-400"
                     : "text-stone-500 hover:text-stone-300"
                 }`}
               >
-                <Sparkles size={13} />
-                AI Questions
+                <MessageSquare size={13} />
+                Chat
               </button>
-            )}
-          </div>
 
-          {/* Panel content */}
-          <div className="flex-1 min-h-0 overflow-hidden">
-            {activeTab === "chat" ? (
-              chatClient && chatChannel ? (
-                <Chat client={chatClient} theme="str-chat__theme-dark">
-                  <Channel channel={chatChannel}>
-                    <Window>
-                      <MessageList />
-                      <MessageInput focus />
-                    </Window>
-                  </Channel>
-                </Chat>
+              {isInterviewer && (
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("ai")}
+                  className={`flex-1 flex items-center justify-center gap-2 py-3 text-xs font-medium transition-colors ${
+                    activeTab === "ai"
+                      ? "text-amber-400 border-b-2 border-amber-400"
+                      : "text-stone-500 hover:text-stone-300"
+                  }`}
+                >
+                  <Sparkles size={13} />
+                  AI Questions
+                </button>
+              )}
+            </div>
+
+            {/* Panel content */}
+            <div className="flex-1 min-h-0 overflow-hidden">
+              {activeTab === "chat" ? (
+                chatClient && chatChannel ? (
+                  <Chat client={chatClient} theme="str-chat__theme-dark">
+                    <Channel channel={chatChannel}>
+                      <Window>
+                        <MessageList />
+                        <MessageInput focus />
+                      </Window>
+                    </Channel>
+                  </Chat>
+                ) : (
+                  <div className="flex items-center justify-center h-full">
+                    <Loader2 size={18} className="text-stone-600 animate-spin" />
+                  </div>
+                )
               ) : (
-                <div className="flex items-center justify-center h-full">
-                  <Loader2 size={18} className="text-stone-600 animate-spin" />
+                <div className="p-4 h-full overflow-y-scroll max-h-screen">
+                  <AIQuestionsPanel categories={booking.categories} />
                 </div>
-              )
-            ) : (
-              <div className="p-4 h-full overflow-y-scroll max-h-screen">
-                <AIQuestionsPanel categories={booking.categories} />
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
+
+        {/* ── Code Editor panel — renders below video when toggled ── */}
+        {showEditor && (
+          <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-3 px-4 pb-4 pt-3 border-t border-white/8 h-105 shrink-0">
+            <ProblemPanel isInterviewer={isInterviewer} />
+            <CodeEditor />
+          </div>
+        )}
       </div>
     </div>
   );
