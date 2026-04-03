@@ -200,6 +200,20 @@ export function AppointmentsClient({ appointments }: { appointments: any[] }) {
         )}
       </div>
 
+        {paginated.length === 0 && (
+          <div className="py-20 text-center">
+            <p className="text-stone-600 text-sm">
+              No interviewers match your search.
+            </p>
+            <Button
+              onClick={clearFilters}
+              variant="link"
+            >
+              Clear Filters
+            </Button>
+          </div>
+        )}
+
       {/* ── Results ── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {paginated.map((b) => (

@@ -14,10 +14,12 @@ import useFetch from "@/hooks/use-fetch";
 import { cancelSlot } from "@/actions/booking";
 import { useRouter } from "next/navigation";
 import { ConfirmDialog } from "../global/confirm-dialog";
+import { RatingModal } from "./rating-modal";
 
 export function AppointmentCard({ booking, mode, isPast = false }: any) {
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [openCancelDialog, setOpenCancelDialog] = useState(false);
+  const [ratingOpen, setRatingOpen] = useState(false);
   const { has } = useAuth();
   const router = useRouter();
 
@@ -82,6 +84,12 @@ export function AppointmentCard({ booking, mode, isPast = false }: any) {
         }
       />
 
+      <RatingModal
+        open={ratingOpen}
+        onOpenChange={setRatingOpen}
+        bookingId={booking.id}
+      />
+
       <article className="group relative bg-[#0f0f11] border border-white/10 transition-all duration-300 hover:-translate-y-0.5 rounded-2xl bg-linear-to-t from-transparent via-transparent to-amber-300/10 p-6 flex flex-col gap-6 self-start">
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-start gap-4 min-w-0">
@@ -98,7 +106,11 @@ export function AppointmentCard({ booking, mode, isPast = false }: any) {
 
             <div className="flex flex-col gap-1 min-w-0">
               <p className="text-base font-medium text-stone-200 leading-tight truncate">
-                <Link href={`/interviewers/${interviewerId}`} className="underline hover:text-amber-400 transition-all duration-200">{person?.name ?? "—"}</Link>
+                {mode === "interviewer" ? 
+                  person?.name ?? "—" : (
+                    <Link href={`/interviewers/${interviewerId}`} className="underline hover:text-amber-400 transition-all duration-200">{person?.name ?? "—"}</Link>
+                  )
+                }
               </p>
               {person?.title && person?.company ? (
                 <p className="text-xs text-stone-500 truncate">
@@ -188,7 +200,7 @@ export function AppointmentCard({ booking, mode, isPast = false }: any) {
         )}
 
         {(streamCallId || recordingUrl || feedback) && (
-          <div className="flex items-center gap-2 flex-wrap pt-1">
+          <div className="flex flex-col sm:flex-row items-start justify-between sm:items-center gap-2 flex-wrap pt-1">
             {!isPast && streamCallId && isUpcoming && (
               <Button
                 variant="gold"
@@ -211,38 +223,45 @@ export function AppointmentCard({ booking, mode, isPast = false }: any) {
               </Button>
             )}
 
-            {recordingUrl && has?.({ plan: "pro" }) && (
-              <Button variant="outline" size="sm" className="gap-2" asChild>
-                <a
-                  href={recordingUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  📹 Recording
-                </a>
-              </Button>
-            )}
-
-            {feedback &&
-              (has?.({ plan: "starter" }) || has?.({ plan: "pro" })) && (
-                <>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="gap-1.5 border-amber-400/20 text-amber-400 hover:bg-amber-400/10 hover:border-amber-400/40"
-                    onClick={() => setFeedbackOpen(true)}
+            <div className="flex items-center gap-x-2">
+              {recordingUrl && has?.({ plan: "pro" }) && (
+                <Button variant="outline" size="sm" className="gap-2" asChild>
+                  <a
+                    href={recordingUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
-                    <Sparkles size={12} />
-                    Full Feedback
-                  </Button>
+                    📹 Recording
+                  </a>
+                </Button>
+              )}
+
+              {feedback &&
+                (has?.({ plan: "starter" }) || has?.({ plan: "pro" })) && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="gap-1.5 border-amber-400/20 text-amber-400 hover:bg-amber-400/10 hover:border-amber-400/40"
+                      onClick={() => setFeedbackOpen(true)}
+                    >
+                      <Sparkles size={12} />
+                      Full Feedback
+                    </Button> 
+              )}
+            </div>
+
+            <div>
+              {feedback &&
+              (has?.({ plan: "starter" }) || has?.({ plan: "pro" })) && (
                   <Badge
                     variant="outline"
-                    className={RATING_STYLES[feedback.overallRating as keyof typeof RATING_STYLES]}
+                    className={`${RATING_STYLES[feedback?.overallRating as keyof typeof RATING_STYLES]}`}
                   >
-                    ✦ {RATING_LABEL[feedback.overallRating as keyof typeof RATING_LABEL]} performance
+                    ✦ {RATING_LABEL[feedback?.overallRating as keyof typeof RATING_LABEL]} performance
                   </Badge>
-                </>
-            )}
+              )}
+            </div>
+
 
             {mode === "interviewee" &&
               status === "SCHEDULED" &&
@@ -298,6 +317,23 @@ export function AppointmentCard({ booking, mode, isPast = false }: any) {
                 </>
             )}
           </div>
+        )}
+
+        {mode === "interviewee" &&
+          status === "COMPLETED" &&
+          !feedback?.sessionRating && (
+            <Button
+              variant="outline"
+              onClick={() => setRatingOpen(true)}
+            >
+              ⭐ Rate Session
+            </Button>
+        )}
+
+        {mode === "interviewee" && 
+          status === "COMPLETED" && 
+          feedback?.sessionRating && (
+            <p className="text-muted-foreground text-xs opacity-50 text-center">Thanks! for your valuable feedback</p>
         )}
       </article>
     </>
