@@ -13,10 +13,14 @@ const refundRules = [
   },
   {
     condition: "Cancelled 12-24 hours before the session",
-    refund: "50% refund",
+    refund: "1 credit will be deducted",
   },
   {
-    condition: "Cancelled less than 12 hours before the session",
+    condition: "Cancelled 2-12 hours before the session",
+    refund: "2 credits will be deducted",
+  },
+  {
+    condition: "Cancelled less than 2 hours before the session",
     refund: "No refund",
   },
   {

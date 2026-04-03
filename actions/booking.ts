@@ -259,3 +259,125 @@ export const bookSlot = async ({interviewerId, startTime, endTime, duration}: {i
         throw new Error("Something went wrong while booking slot", (err as any).message)
     }
 };
+
+export const cancelSlot = async (bookingId: string) => {
+  try {
+    const { userId } = await auth();
+    if (!userId) throw new Error("Unauthorized");
+
+    const user = await prisma.user.findUnique({
+      where: { clerkUserId: userId },
+    });
+    if (!user) throw new Error("User not found");
+
+    const booking = await prisma.booking.findUnique({
+      where: { id: bookingId },
+    });
+    if (!booking) throw new Error("Booking not found");
+
+    // Only interviewee can cancel
+    if (booking.intervieweeId !== user.id) {
+      throw new Error("Unauthorized action");
+    }
+
+    if (booking.status !== "SCHEDULED") {
+      throw new Error("Only scheduled bookings can be cancelled");
+    }
+
+    const now = new Date();
+    const start = new Date(booking.startTime);
+
+    const diffMs = start.getTime() - now.getTime();
+    const diffHours = diffMs / (1000 * 60 * 60);
+
+    if (diffHours < 2) {
+      throw new Error("Cannot cancel less than 2 hours before session");
+    }
+
+    const creditsCharged = booking.creditsCharged;
+
+    // Determine refund
+    let refundCredits = 0;
+
+    if (diffHours >= 24) {
+      refundCredits = creditsCharged;
+    } else if (diffHours >= 12) {
+      refundCredits = Math.max(creditsCharged - 1, 0);
+    } else if (diffHours >= 2) {
+      refundCredits = Math.max(creditsCharged - 2, 0);
+    }
+
+    try {
+      await prisma.$transaction(async (tx) => {
+        // Update booking
+        await tx.booking.update({
+          where: { id: bookingId },
+          data: {
+            status: "CANCELLED",
+            cancelledBy: user.id,
+            cancelledAt: new Date(),
+            refundCredits,
+          },
+        });
+
+        // Refund credits to interviewee
+        if (refundCredits > 0) {
+          await tx.user.update({
+            where: { id: user.id },
+            data: {
+              credits: {
+                increment: refundCredits,
+              },
+            },
+          });
+
+          // Create credit transaction
+          await tx.creditTransaction.create({
+            data: {
+              userId: user.id,
+              amount: refundCredits,
+              type: "BOOKING_REFUND",
+              bookingId: bookingId,
+            },
+          });
+        }
+
+        // Deduct from interviewer earnings 
+        await tx.user.update({
+          where: { id: booking.interviewerId },
+          data: {
+            creditBalance: {
+              decrement: booking.creditsCharged,
+            },
+          },
+        });
+
+
+        // Update availability of the interviewer
+        await tx.availability.updateMany({
+            where: {
+                interviewerId: booking.interviewerId,
+                startTime: booking.startTime,
+                endTime: booking.endTime,
+            },
+            data: {
+                status: "AVAILABLE",
+            },
+        });
+      });
+
+      revalidatePath("/dashboard");
+      revalidatePath("/explore")
+      revalidatePath("/appointments")
+      revalidatePath(`/interviewers/${booking.interviewerId}`)
+
+      return { success: true };
+    } catch (err) {
+      console.error("TRANSACTION FAILED:", err);
+      throw new Error("Failed to cancel booking");
+    }
+  } catch (err: any) {
+    console.error("CANCEL SLOT ERROR:", err);
+    throw new Error(err.message || "Something went wrong");
+  }
+};

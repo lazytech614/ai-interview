@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useAuth } from "@clerk/nextjs";
 import Link from "next/link";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -10,10 +10,21 @@ import { Calendar, Clock, Video, Sparkles } from "lucide-react";
 import { formatDate, formatDuration, formatTime } from "@/lib/helpers";
 import { RATING_LABEL, RATING_STYLES, STATUS_STYLES } from "@/lib/data";
 import { FeedbackModal } from "./feedback-modal";
+import useFetch from "@/hooks/use-fetch";
+import { cancelSlot } from "@/actions/booking";
+import { useRouter } from "next/navigation";
+import { ConfirmDialog } from "../global/confirm-dialog";
 
 export function AppointmentCard({ booking, mode, isPast = false }: any) {
   const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [openCancelDialog, setOpenCancelDialog] = useState(false);
   const { has } = useAuth();
+  const router = useRouter();
+
+  const {
+    fn: cancelBookingFn,
+    loading: cancelling,
+  } = useFetch(cancelSlot);
 
   const {
     startTime,
@@ -52,6 +63,12 @@ export function AppointmentCard({ booking, mode, isPast = false }: any) {
     isUpcoming &&
     now >= joinWindowStart &&
     now <= end;
+
+  // For slot cancellation
+  const diffMs = start.getTime() - now.getTime();
+  const diffHours = diffMs / (1000 * 60 * 60);
+
+  const canCancel = diffHours >= 2;
 
   return (
     <>
@@ -171,15 +188,6 @@ export function AppointmentCard({ booking, mode, isPast = false }: any) {
 
         {(streamCallId || recordingUrl || feedback) && (
           <div className="flex items-center gap-2 flex-wrap pt-1">
-            {/* {!isPast && streamCallId && isUpcoming && (
-              <Button variant="gold" size="sm" className="gap-2" asChild>
-                <Link href={`/call/${streamCallId}`}>
-                  <Video size={13} />
-                  Join call
-                </Link>
-              </Button>
-            )} */}
-
             {!isPast && streamCallId && isUpcoming && (
               <Button
                 variant="gold"
@@ -233,7 +241,53 @@ export function AppointmentCard({ booking, mode, isPast = false }: any) {
                     ✦ {RATING_LABEL[feedback.overallRating as keyof typeof RATING_LABEL]} performance
                   </Badge>
                 </>
-              )}
+            )}
+
+            {mode === "interviewee" &&
+              status === "SCHEDULED" &&
+              !isPast && (
+                <>
+                  {/* Cancel Button */}
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => setOpenCancelDialog(true)}
+                    disabled={!canCancel || cancelling}
+                  >
+                    {!canCancel
+                      ? "Cancellation closed"
+                      : cancelling
+                      ? "Cancelling..."
+                      : "Cancel Session"}
+                  </Button>
+
+                  {/* Optional message */}
+                  {!canCancel && (
+                    <p className="text-xs text-red-400">
+                      Cannot cancel within 2 hours of session
+                    </p>
+                  )}
+
+                  {/* Confirm Dialog */}
+                  <ConfirmDialog
+                    open={openCancelDialog}
+                    onOpenChange={setOpenCancelDialog}
+                    title="Cancel this session?"
+                    description="You may receive partial or full refund based on cancellation time."
+                    confirmText="Yes, Cancel"
+                    cancelText="Keep Session"
+                    variant="destructive"
+                    loading={cancelling}
+                    onConfirm={async () => {
+                      const res = await cancelBookingFn(booking.id);
+                      if (res?.success) {
+                        setOpenCancelDialog(false);
+                        router.refresh();
+                      }
+                    }}
+                  />
+                </>
+            )}
           </div>
         )}
       </article>
