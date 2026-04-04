@@ -39,7 +39,7 @@ const Output = ({ editorRef, language }: any) => {
 
   return (
     <div className="flex flex-col gap-2 h-full">
-      <Button onClick={runCode} disabled={isLoading}>
+      <Button onClick={runCode} disabled={isLoading} className="cursor-pointer">
         {isLoading ? "Running..." : "Run Code"}
       </Button>
 

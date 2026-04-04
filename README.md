@@ -39,8 +39,8 @@
 Test accounts:
 | Role | Email | Password |
 |------|-------|----------|
-| Interviewee | demo.interviewee@prept.dev | Demo@1234 |
-| Interviewer | demo.interviewer@prept.dev | Demo@1234 |
+| Interviewee | demo.interviewee@prept.dev | Demo@1234Password |
+| Interviewer | demo.interviewer@prept.dev | Demo@1234Password |
 
 > ⚠️ Demo accounts are reset periodically. Do not store sensitive data.
 
