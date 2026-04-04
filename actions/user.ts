@@ -13,6 +13,7 @@ export const getCurrentUser = async () => {
                 clerkUserId: user.id
             },
             select: {
+                id: true,
                 role: true,
                 name: true,
                 title: true,

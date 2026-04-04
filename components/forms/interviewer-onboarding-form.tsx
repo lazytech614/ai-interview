@@ -33,7 +33,7 @@ const InterviewerOnboardingForm = ({ form, setForm }: any) => {
     }));
   };
 
-  // 🔍 Filter categories based on search
+  // Filter categories based on search
   const filteredCategories = CATEGORIES.filter((cat) =>
     cat.label.toLowerCase().includes(search.toLowerCase())
   );

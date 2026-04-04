@@ -4,19 +4,22 @@ import PageHeader from "@/components/global/reusables";
 import { getCurrentUser } from "@/actions/user";
 import { getAvailability, getInterviewerAppointments, getInterviewerStats, getWithdrawalHistory } from "@/actions/dashboard";
 import { DashboardTabs } from "@/components/dashboard/dashboard-tabs";
+import { getInterviewerProfile } from "@/actions/booking";
 
 export default async function InterviewerDashboardPage() {
   const user = await currentUser();
   if (!user) redirect("/");
 
   const dbUser = await getCurrentUser();
+  if(!dbUser) return null
 
-  const [availability, appointments, stats, withdrawalHistory] =
+  const [availability, appointments, stats, withdrawalHistory, profile] =
     await Promise.all([
       getAvailability(),
       getInterviewerAppointments(),
       getInterviewerStats(),
       getWithdrawalHistory(),
+      getInterviewerProfile(dbUser.id)
     ]);
 
   return (
@@ -46,6 +49,7 @@ export default async function InterviewerDashboardPage() {
           availability={availability}
           stats={stats}
           withdrawalHistory={withdrawalHistory}
+          profile={profile}
         />
       </div>
     </main>

@@ -1,20 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import { ClipboardList, Clock, Wallet } from "lucide-react";
+import { ClipboardList, Clock, User, Wallet } from "lucide-react";
 import AppointmentsSection from "@/components/dashboard/appointments-section";
 import AvailabilitySection from "@/components/dashboard/availability-section";
 import EarningsSection from "@/components/dashboard/earnings-section";
+import UpdateProfileSection from "./update-profile-section";
+import useFetch from "@/hooks/use-fetch";
+import { getInterviewerProfile } from "@/actions/booking";
 
-type Tab = "earnings" | "appointments" | "availability";
+type Tab = "earnings" | "appointments" | "availability" | "profile";
 
 const TABS: { key: Tab; label: string; icon: React.ReactNode }[] = [
   { key: "earnings", label: "Earnings", icon: <Wallet size={15} /> },
   { key: "appointments", label: "Appointments", icon: <ClipboardList size={15} /> },
   { key: "availability", label: "Availability", icon: <Clock size={15} /> },
+  { key: "profile", label: "Profile", icon: <User size={15} /> },
 ];
 
-export function DashboardTabs({ appointments, availability, stats, withdrawalHistory }: any) {
+export function DashboardTabs({ appointments, availability, stats, withdrawalHistory, profile }: any) {
   const [tab, setTab] = useState<Tab>("earnings");
 
   return (
@@ -48,6 +52,9 @@ export function DashboardTabs({ appointments, availability, stats, withdrawalHis
       )}
       {tab === "availability" && (
         <AvailabilitySection initial={availability} />
+      )}
+      {tab === "profile" && (
+        <UpdateProfileSection initial={profile} />
       )}
     </div>
   );

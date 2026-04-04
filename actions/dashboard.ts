@@ -353,16 +353,10 @@ export const updateInterviewerProfile = async (data: any) => {
       sessionRates
     } = data
 
-    if(!bio || !title || !company || !yearsExp || !categories?.length || !sessionRates?.length) throw new Error("Missing required fields")
+    if(!bio || !title || !company || !yearsExp || !categories?.length || !sessionRates) throw new Error("Missing required fields")
     if (sessionRates[45] !== 1) throw new Error("45 min must be 1 credit")
     if (![1, 2, 3].includes(sessionRates[60])) throw new Error("60 min must be 1, 2, or 3 credits")
     if (![1, 2, 3, 4, 5].includes(sessionRates[90])) throw new Error("90 min must be 1–5 credits")
-
-    const rates = [
-      { duration: 45, credits: sessionRates[45] },
-      { duration: 60, credits: sessionRates[60] },
-      { duration: 90, credits: sessionRates[90] }
-    ]
 
     await prisma.$transaction(async (tx) => {
       await tx.user.update({
