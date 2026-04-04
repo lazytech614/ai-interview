@@ -29,10 +29,7 @@ export const getInterviewerProfile = async (id: string) => {
         if(!id) throw new Error("Missing required fields")
 
         const interviewer = await prisma.user.findUnique({
-            where: {
-                id,
-                role: "INTERVIEWER"
-            },
+            where: { id, role: "INTERVIEWER" },
             select: {
                 id: true,
                 name: true,
@@ -43,33 +40,85 @@ export const getInterviewerProfile = async (id: string) => {
                 bio: true,
                 categories: true,
                 sessionRates: {
-                    select: {
-                        duration: true,
-                        credits: true
-                    }
+                    select: { duration: true, credits: true },
                 },
                 availabilities: {
-                    where: {
-                        status: "AVAILABLE"
-                    },
-                    select: {
-                        startTime: true,
-                        endTime: true
-                    },
+                    where: { status: "AVAILABLE" },
+                    select: { startTime: true, endTime: true },
                 },
-                bookingsAsInterviewer: {
-                    where: {
-                        status: "SCHEDULED"
-                    },
-                    select: {
-                        startTime: true,
-                        endTime: true
-                    }
-                }
-            }
-        })
+            },
+        });
 
-        return interviewer ?? null
+        const upcomingBookings = await prisma.booking.findMany({
+            where: {
+                interviewerId: id,
+                status: "SCHEDULED",
+            },
+            select: {
+                id: true,
+                startTime: true,
+                endTime: true,
+                interviewee: {
+                select: {
+                    name: true,
+                    imageUrl: true,
+                },
+                },
+            },
+        });
+
+        const reviews = await prisma.booking.findMany({
+            where: {
+                interviewerId: id,
+                status: "COMPLETED",
+                feedback: {
+                sessionRating: { not: null },
+                },
+            },
+            select: {
+                id: true,
+                feedback: {
+                select: {
+                    sessionRating: true,
+                    sessionComment: true,
+                    createdAt: true,
+                },
+                },
+                interviewee: {
+                select: {
+                    name: true,
+                    imageUrl: true,
+                },
+                },
+            },
+            orderBy: {
+                feedback: {
+                createdAt: "desc",
+                },
+            },
+            take: 5,
+        });
+
+        const ratingSummary = await prisma.feedback.aggregate({
+            _avg: {
+                sessionRating: true,
+            },
+            _count: {
+                sessionRating: true,
+            },
+            where: {
+                booking: {
+                    interviewerId: id,
+                },
+            },
+        });
+
+        return {
+            interviewer,
+            upcomingBookings,
+            reviews,
+            ratingSummary
+        };
     }catch(err) {
         console.error("SOMETHING WENT WRONG GETTING INTERVIEWER PROFILE", err)
         return null

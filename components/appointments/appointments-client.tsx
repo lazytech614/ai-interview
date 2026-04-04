@@ -200,7 +200,7 @@ export function AppointmentsClient({ appointments }: { appointments: any[] }) {
         )}
       </div>
 
-        {paginated.length === 0 && (
+        {paginated.length === 0 &&  (search || statusFilter !== "ALL") && (
           <div className="py-20 text-center">
             <p className="text-stone-600 text-sm">
               No interviewers match your search.

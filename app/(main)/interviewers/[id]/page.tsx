@@ -18,7 +18,14 @@ export default async function InterviewerProfilePage({ params }: any) {
   if (!dbUser) redirect("/");
   if (dbUser.role === "UNASSIGNED") redirect("/onboarding");
 
-  const interviewer = await getInterviewerProfile(id);
+  const data = await getInterviewerProfile(id);
+
+  if (!data) {
+    throw new Error("Failed to load interviewer");
+  }
+
+  const { interviewer, reviews, ratingSummary } = data;
+
   if (!interviewer) notFound();
 
   return (
@@ -68,12 +75,6 @@ export default async function InterviewerProfilePage({ params }: any) {
                     {interviewer.yearsExp}+ yrs experience
                   </Badge>
                 )}
-                <Badge
-                  variant="outline"
-                  className="border-amber-400/25 bg-amber-400/8 text-amber-400 text-xs px-3 py-1"
-                >
-                   credits / session
-                </Badge>
                 {interviewer.availabilities?.[0] && (
                   <Badge
                     variant="outline"
@@ -91,13 +92,24 @@ export default async function InterviewerProfilePage({ params }: any) {
       {/* ── Body ── */}
       <div className="max-w-6xl mx-auto px-8 py-12 grid grid-cols-1 lg:grid-cols-5 gap-10 items-start">
         {/* ── LEFT ── */}
-        <div className="lg:col-span-3 flex flex-col gap-6 order-2 lg:-order-1">
+        <div className="lg:col-span-3 flex flex-col gap-6 order-2 lg:-order-1 relative">
           {interviewer.bio && (
             <div className="bg-[#0f0f11] border border-white/10 rounded-2xl p-8 flex flex-col gap-5">
               <SectionLabel>About</SectionLabel>
               <p className="text-base text-stone-300 font-light leading-relaxed">
                 {interviewer.bio}
               </p>
+              {ratingSummary?._count?.sessionRating > 0 && (
+                <div className="flex items-center text-sm sm:text-base gap-2 mt-2 absolute right-8 top-4">
+                  <span className="text-amber-400 text-lg">⭐</span>
+                  <span className="text-stone-200 font-medium">
+                    {ratingSummary._avg.sessionRating?.toFixed(1)}
+                  </span>
+                  <span className="text-stone-500 text-xs sm:text-sm">
+                    ({ratingSummary._count.sessionRating} reviews)
+                  </span>
+                </div>
+              )}
             </div>
           )}
 
@@ -119,6 +131,67 @@ export default async function InterviewerProfilePage({ params }: any) {
                   </span>
                 ))}
               </div>
+            </div>
+          )}
+
+          {reviews?.length > 0 && (
+            <div className="bg-[#0f0f11] border border-white/10 rounded-2xl p-8 flex flex-col gap-6">
+              <div>
+                <SectionLabel>Recent Reviews</SectionLabel>
+                <p className="text-sm text-stone-500 font-light mt-1">
+                  What candidates are saying about this interviewer.
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-5">
+                {reviews.map((review: any) => (
+                  <div
+                    key={review.id}
+                    className="border-b border-white/5 pb-4 last:border-none"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Avatar className="w-9 h-9 border border-white/10">
+                        <AvatarImage
+                          src={review.interviewee?.imageUrl}
+                        />
+                        <AvatarFallback>
+                          {review.interviewee?.name?.[0]}
+                        </AvatarFallback>
+                      </Avatar>
+
+                      <div className="flex flex-col">
+                        <p className="text-sm text-stone-300">
+                          {review.interviewee?.name}
+                        </p>
+                        <div className="text-xs text-stone-500">
+                          {new Date(
+                            review.feedback?.createdAt
+                          ).toLocaleDateString()}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-2 text-amber-400 text-sm">
+                      {"★".repeat(review.feedback?.sessionRating)}
+                      {"☆".repeat(5 - review.feedback?.sessionRating)}
+                    </div>
+
+                    {review.feedback?.sessionComment && (
+                      <p className="text-sm text-stone-400 mt-2 leading-relaxed">
+                        {review.feedback.sessionComment}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {reviews?.length == 0 && (
+            <div className="bg-[#0f0f11] border border-white/10 rounded-2xl p-8 text-center">
+              <p className="text-stone-500 text-sm">
+                No reviews yet. Be the first to book and review!
+              </p>
             </div>
           )}
 
