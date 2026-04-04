@@ -125,7 +125,17 @@ export const getInterviewerProfile = async (id: string) => {
     }
 };
 
-export const bookSlot = async ({interviewerId, startTime, endTime, duration}: {interviewerId: string, startTime: string, endTime: string, duration: 45 | 60 | 90;}): Promise<BookSlotResponse> => {
+export const bookSlot = async ({
+    interviewerId, 
+    startTime, 
+    endTime, 
+    duration
+}: {
+    interviewerId: string, 
+    startTime: string, 
+    endTime: string, 
+    duration: 45 | 60 | 90;
+}): Promise<BookSlotResponse> => {
     try {
         const {userId} = await auth()
         if(!userId) throw new Error("Unauthorized")
@@ -142,14 +152,14 @@ export const bookSlot = async ({interviewerId, startTime, endTime, duration}: {i
 
         // Collision check — reject if any SCHEDULED booking overlaps this window
         const collision = await prisma.booking.findFirst({
-        where: {
-            interviewerId,
-            status: "SCHEDULED",
-            AND: [
-            { startTime: { lt: end   } },   // existing starts before new ends
-            { endTime:   { gt: start } },   // existing ends after new starts
-            ],
-        },
+            where: {
+                interviewerId,
+                status: "SCHEDULED",
+                AND: [
+                    { startTime: { lt: end   } },   // existing starts before new ends
+                    { endTime:   { gt: start } },   // existing ends after new starts
+                ],
+            },
         });
         if (collision) throw new Error("This slot has just been booked. Please choose another.");
             
@@ -187,18 +197,6 @@ export const bookSlot = async ({interviewerId, startTime, endTime, duration}: {i
         const credits = rate.credits
 
         if(user.credits < credits) throw new Error("Insufficient credits. Please upgrade your plan.")
-
-        const conflict = await prisma.booking.findFirst({
-            where: {
-                interviewerId,
-                status: "SCHEDULED",
-                startTime: {lt: new Date(endTime)},
-                endTime: {gt: new Date(startTime)}
-            }
-        })
-
-        if(conflict) throw new Error("This slot is already booked. Please choose another time.")
-
 
         // STREM CALL 
         let streamCallId 

@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useCallback, useState } from "react";
-
-// Stream Video
 import {
   StreamTheme,
   SpeakerLayout,
@@ -12,8 +10,6 @@ import {
   CallControls,
 } from "@stream-io/video-react-sdk";
 import "@stream-io/video-react-sdk/dist/css/styles.css";
-
-// Stream Chat
 import {
   Chat,
   Channel,
@@ -23,14 +19,13 @@ import {
   useCreateChatClient,
 } from "stream-chat-react";
 import "stream-chat-react/dist/css/v2/index.css";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, Sparkles, Loader2, Code2 } from "lucide-react";
+import { MessageSquare, Sparkles, Loader2, Code2, X } from "lucide-react";
 import type { Channel as StreamChannel } from "stream-chat";
 import AIQuestionsPanel from "./ai-questions";
-import { CodeEditor } from "./code-editor";
 import { ProblemPanel } from "./problem-panel";
+import CodeEditor from "./code-editor";
 
 export default function CallUI({
   callId,
@@ -48,7 +43,6 @@ export default function CallUI({
   const [activeTab, setActiveTab] = useState("chat");
   const [showEditor, setShowEditor] = useState(false);
 
-  // Auto-stop recording before leaving
   const handleLeave = useCallback(async () => {
     try {
       if (call) {
@@ -63,7 +57,6 @@ export default function CallUI({
     }
   }, [call, onLeave]);
 
-  // ── Chat client ──
   const chatClient = useCreateChatClient({
     apiKey,
     tokenOrProvider: token,
@@ -105,7 +98,8 @@ export default function CallUI({
   }
 
   return (
-    <div className="min-h-[92vh] bg-[#0a0a0b] flex flex-col overflow-hidden">
+    <div className="min-h-screen bg-[#0a0a0b] flex flex-col overflow-hidden">
+
       {/* ── Top bar ── */}
       <div className="flex items-center justify-between px-6 py-3 border-b border-white/8 shrink-0">
         <div className="flex items-center gap-2">
@@ -127,7 +121,6 @@ export default function CallUI({
           )}
         </div>
 
-        {/* Code Editor toggle */}
         <Button
           variant={showEditor ? "gold" : "outline"}
           size="sm"
@@ -144,11 +137,11 @@ export default function CallUI({
       </div>
 
       {/* ── Main body ── */}
-      <div className="flex flex-col flex-1 min-h-0">
-
-        {/* Video + side panel row */}
+      {!showEditor ? (
+        /* ── DEFAULT MODE: video left, chat/ai right ── */
         <div className="flex flex-col md:flex-row flex-1 min-h-0">
-          {/* LEFT: Video */}
+
+          {/* Video */}
           <div className="flex flex-col md:flex-1 min-w-0">
             <StreamTheme>
               <SpeakerLayout />
@@ -156,9 +149,8 @@ export default function CallUI({
             </StreamTheme>
           </div>
 
-          {/* RIGHT: Chat / AI panel */}
+          {/* Chat / AI panel */}
           <div className="w-full md:w-85 shrink-0 flex flex-col border-l border-white/8 bg-[#0a0a0b]">
-            {/* Tab switcher */}
             <div className="flex border-b border-white/8 shrink-0">
               <button
                 type="button"
@@ -189,7 +181,6 @@ export default function CallUI({
               )}
             </div>
 
-            {/* Panel content */}
             <div className="flex-1 min-h-0 overflow-hidden">
               {activeTab === "chat" ? (
                 chatClient && chatChannel ? (
@@ -215,14 +206,57 @@ export default function CallUI({
           </div>
         </div>
 
-        {/* ── Code Editor panel — renders below video when toggled ── */}
-        {showEditor && (
-          <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-3 px-4 pb-4 pt-3 border-t border-white/8 h-105 shrink-0">
-            <ProblemPanel isInterviewer={isInterviewer} />
-            <CodeEditor />
+      ) : (
+        /* ── EDITOR MODE: problem + code editor dominate, videos shrink to strip ── */
+        <div className="flex flex-1 min-h-0">
+
+          {/* LEFT: problem panel + code editor (takes majority) */}
+          <div className="flex flex-col flex-1 min-w-0 min-h-0">
+
+            {/* Problem + Editor */}
+            <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] flex-1 min-h-0 overflow-hidden">
+              <div className="border-r border-white/8 overflow-y-auto">
+                <ProblemPanel isInterviewer={isInterviewer} />
+              </div>
+              <div className="overflow-y-auto">
+                <CodeEditor />
+              </div>
+            </div>
+
+            {/* Mini call controls strip at bottom */}
+            <div className="shrink-0 border-t border-white/8 px-4 py-2 flex items-center justify-center">
+              <StreamTheme>
+                <CallControls onLeave={handleLeave} />
+              </StreamTheme>
+            </div>
           </div>
-        )}
-      </div>
+
+          {/* RIGHT: compact video strip */}
+          <div className="w-64 shrink-0 flex flex-col border-l border-white/8 bg-[#0a0a0b]">
+
+            {/* Header */}
+            <div className="flex items-center justify-between px-3 py-2.5 border-b border-white/8 shrink-0">
+              <span className="text-[11px] text-stone-600 font-medium tracking-wide uppercase">
+                Participants
+              </span>
+              <button
+                type="button"
+                onClick={() => setShowEditor(false)}
+                className="text-stone-600 hover:text-stone-400 transition-colors"
+              >
+                <X size={13} />
+              </button>
+            </div>
+
+            {/* Compact speaker layout */}
+            <div className="flex-1 min-h-0 overflow-hidden [&_.str-video]:h-full [&_.str-video__speaker-layout]:flex-col [&_.str-video__speaker-layout]:gap-1 [&_.str-video__speaker-layout]:p-2">
+              <StreamTheme>
+                <SpeakerLayout />
+              </StreamTheme>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

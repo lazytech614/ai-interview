@@ -7,6 +7,7 @@ import Header from "@/components/global/header";
 import Footer from "@/components/global/footer";
 import { dark } from "@clerk/themes";
 import { Toaster } from "sonner";
+import ConditionalLayout from "@/components/global/conditional-layout";
 
 const lora = Lora({
   subsets: ["latin"],
@@ -55,16 +56,12 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            {/* HEADER  */}
-            <Header />
-
             {/* MAIN CONTENT  */}
             <main className="min-h-screen">
-              {children}
+              <ConditionalLayout header={<Header />} footer={<Footer />}>
+                {children}
+              </ConditionalLayout>
             </main>
-
-            {/* FOOTER  */}
-            <Footer />
           </ThemeProvider>
           <Toaster richColors />
         </ClerkProvider>

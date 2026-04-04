@@ -1,128 +1,160 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import Editor from "@monaco-editor/react";
-import { useCall } from "@stream-io/video-react-sdk";
-import { Code2, Play, RotateCcw } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useRef, useState } from "react";
+import { Editor, BeforeMount } from "@monaco-editor/react";
+import { CODE_SNIPPETS } from "@/lib/data";
+import LanguageSelector from "./laguage-selector";
+import Output from "./output";
 
-const LANGUAGES = ["javascript", "python", "typescript", "java", "cpp"];
+const defineTheme: BeforeMount = (monaco) => {
+  monaco.editor.defineTheme("rich-dark", {
+    base: "vs-dark",
+    inherit: true,
+    rules: [
+      { token: "comment",        foreground: "6A9955", fontStyle: "italic" },
+      { token: "keyword",        foreground: "C586C0", fontStyle: "bold"   },
+      { token: "string",         foreground: "CE9178"                      },
+      { token: "number",         foreground: "B5CEA8"                      },
+      { token: "type",           foreground: "4EC9B0"                      },
+      { token: "class",          foreground: "4EC9B0"                      },
+      { token: "function",       foreground: "DCDCAA"                      },
+      { token: "variable",       foreground: "9CDCFE"                      },
+      { token: "variable.other", foreground: "9CDCFE"                      },
+      { token: "constant",       foreground: "4FC1FF"                      },
+      { token: "operator",       foreground: "D4D4D4"                      },
+      { token: "delimiter",      foreground: "D4D4D4"                      },
+      { token: "tag",            foreground: "4EC9B0"                      },
+      { token: "attribute.name", foreground: "9CDCFE"                      },
+      { token: "attribute.value",foreground: "CE9178"                      },
+    ],
+    colors: {
+      // Editor core
+      "editor.background":                "#0D0D0F",
+      "editor.foreground":                "#D4D4D4",
+      "editor.lineHighlightBackground":   "#1A1A2E",
+      "editor.lineHighlightBorder":       "#2A2A4A",
+      "editor.selectionBackground":       "#264F78",
+      "editor.inactiveSelectionBackground":"#3A3D41",
+      "editor.selectionHighlightBackground": "#ADD6FF26",
 
-const STARTER_CODE: Record<string, string> = {
-  javascript: `// Write your solution here\nfunction solution() {\n  \n}\n`,
-  python: `# Write your solution here\ndef solution():\n    pass\n`,
-  typescript: `// Write your solution here\nfunction solution(): void {\n  \n}\n`,
-  java: `// Write your solution here\nclass Solution {\n  public void solve() {\n    \n  }\n}\n`,
-  cpp: `// Write your solution here\n#include <bits/stdc++.h>\nusing namespace std;\n\nvoid solution() {\n  \n}\n`,
+      // Line numbers
+      "editorLineNumber.foreground":      "#4A4A6A",
+      "editorLineNumber.activeForeground":"#C6C6C6",
+
+      // Cursor
+      "editorCursor.foreground":          "#AEAFAD",
+
+      // Gutter
+      "editorGutter.background":          "#0D0D0F",
+
+      // Indent guides
+      "editorIndentGuide.background":     "#2A2A3A",
+      "editorIndentGuide.activeBackground":"#4A4A6A",
+
+      // Bracket match
+      "editorBracketMatch.background":    "#0064001A",
+      "editorBracketMatch.border":        "#888888",
+
+      // Scrollbar
+      "scrollbarSlider.background":       "#4A4A6A44",
+      "scrollbarSlider.hoverBackground":  "#4A4A6A88",
+      "scrollbarSlider.activeBackground": "#4A4A6AAA",
+
+      // Minimap
+      "minimap.background":               "#0D0D0F",
+
+      // Widget (autocomplete dropdown)
+      "editorWidget.background":          "#1E1E2E",
+      "editorWidget.border":              "#454545",
+      "editorSuggestWidget.background":   "#1E1E2E",
+      "editorSuggestWidget.border":       "#454545",
+      "editorSuggestWidget.selectedBackground": "#2A2D2E",
+
+      // Matching brackets highlight
+      "editorBracketHighlight.foreground1": "FFD700",
+      "editorBracketHighlight.foreground2": "DA70D6",
+      "editorBracketHighlight.foreground3": "87CEEB",
+    },
+  });
 };
 
-export function CodeEditor() {
-  const call = useCall();
-  const [code, setCode] = useState(STARTER_CODE.javascript);
-  const [language, setLanguage] = useState("javascript");
-  const isBroadcasting = useRef(false); // prevent echo loop
+type Language = keyof typeof CODE_SNIPPETS;
 
-  // Listen for incoming code changes from the other participant
-  useEffect(() => {
-    if (!call) return;
+const CodeEditor = () => {
+  const editorRef = useRef<any>(null);
+  const [value, setValue] = useState<string>(
+    CODE_SNIPPETS["javascript"]
+  );
+  const [language, setLanguage] = useState<Language>("javascript");
 
-    const unsubscribe = call.on("custom", (event: any) => {
-      if (event.custom?.type === "code-change") {
-        isBroadcasting.current = true;
-        setCode(event.custom.code);
-        setTimeout(() => { isBroadcasting.current = false; }, 50);
-      }
-      if (event.custom?.type === "language-change") {
-        setLanguage(event.custom.language);
-        setCode(STARTER_CODE[event.custom.language]);
-      }
-    });
-
-    return () => unsubscribe();
-  }, [call]);
-
-  // Broadcast code changes to other participant
-  const handleCodeChange = (value: string | undefined) => {
-    const newCode = value ?? "";
-    setCode(newCode);
-    if (!isBroadcasting.current && call) {
-      call.sendCustomEvent({ type: "code-change", code: newCode });
-    }
+  const onMount = (editor: any) => {
+    editorRef.current = editor;
+    editor.focus();
   };
 
-  const handleLanguageChange = (lang: string) => {
+  const onSelect = (lang: Language) => {
     setLanguage(lang);
-    setCode(STARTER_CODE[lang]);
-    call?.sendCustomEvent({ type: "language-change", language: lang });
-  };
-
-  const handleReset = () => {
-    const fresh = STARTER_CODE[language];
-    setCode(fresh);
-    call?.sendCustomEvent({ type: "code-change", code: fresh });
+    setValue(CODE_SNIPPETS[lang]);
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#0a0a0c] border border-white/10 rounded-2xl overflow-hidden">
-      {/* Toolbar */}
-      <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/8 bg-[#0f0f11]">
-        <div className="flex items-center gap-2">
-          <Code2 size={14} className="text-amber-400" />
-          <span className="text-xs font-semibold text-stone-400 tracking-wide uppercase">
-            Code Editor
-          </span>
-        </div>
-
-        <div className="flex items-center gap-2">
-          {/* Language selector */}
-          <select
-            value={language}
-            onChange={(e) => handleLanguageChange(e.target.value)}
-            className="text-xs bg-white/5 border border-white/10 text-stone-300 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-amber-400/40 cursor-pointer"
-          >
-            {LANGUAGES.map((l) => (
-              <option key={l} value={l} className="bg-[#0f0f11]">
-                {l.charAt(0).toUpperCase() + l.slice(1)}
-              </option>
-            ))}
-          </select>
-
-          {/* Reset */}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleReset}
-            className="h-7 px-2.5 gap-1.5 border-white/10 bg-white/3 text-stone-500 hover:text-stone-300 text-xs"
-          >
-            <RotateCcw size={11} />
-            Reset
-          </Button>
-        </div>
+    <div className="flex flex-col h-full p-3 gap-3">
+      
+      {/* Language selector */}
+      <div className="shrink-0">
+        <LanguageSelector language={language} onSelect={onSelect} />
       </div>
 
-      {/* Monaco Editor */}
-      <div className="flex-1 min-h-0">
-        <Editor
-          height="100%"
-          language={language}
-          value={code}
-          onChange={handleCodeChange}
-          theme="vs-dark"
-          options={{
-            fontSize: 14,
-            fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
-            minimap: { enabled: false },
-            scrollBeyondLastLine: false,
-            lineNumbers: "on",
-            renderLineHighlight: "line",
-            padding: { top: 16, bottom: 16 },
-            tabSize: 2,
-            wordWrap: "on",
-            automaticLayout: true,
-            smoothScrolling: true,
-          }}
-        />
+      {/* Editor + Output — fill remaining height */}
+      <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-4 flex-1 min-h-0">
+        
+        {/* Editor */}
+        <div className="border border-white/10 rounded-xl overflow-hidden h-full p-2">
+          <Editor
+            height="100%"
+            theme="rich-dark"
+            beforeMount={defineTheme}
+            language={language}
+            value={value}
+            onMount={onMount}
+            onChange={(val) => setValue(val || "")}
+            options={{
+              minimap: { enabled: false },
+              fontSize: 14,
+              fontFamily: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace",
+              fontLigatures: true,
+              automaticLayout: true,
+              lineHeight: 24,
+              letterSpacing: 0.5,
+              cursorBlinking: "smooth",
+              cursorSmoothCaretAnimation: "on",
+              smoothScrolling: true,
+              renderLineHighlight: "all",
+              scrollBeyondLastLine: false,
+              padding: { top: 16, bottom: 16 },
+              bracketPairColorization: { enabled: true },
+              guides: {
+                bracketPairs: true,
+                indentation: true,
+              },
+              tabSize: 2,
+              wordWrap: "on",
+              suggest: {
+                showKeywords: true,
+                showSnippets: true,
+              },
+            }}
+          />
+        </div>
+
+        {/* Output */}
+        <div className="border border-white/10 rounded-xl p-2 bg-[#0f0f11] overflow-y-auto">
+          <Output editorRef={editorRef} language={language} />
+        </div>
+
       </div>
     </div>
   );
-}
+};
+
+export default CodeEditor;

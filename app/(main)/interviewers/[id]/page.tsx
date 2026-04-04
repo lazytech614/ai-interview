@@ -24,7 +24,7 @@ export default async function InterviewerProfilePage({ params }: any) {
     throw new Error("Failed to load interviewer");
   }
 
-  const { interviewer, reviews, ratingSummary } = data;
+  const { interviewer, reviews, ratingSummary, upcomingBookings } = data;
 
   if (!interviewer) notFound();
 
@@ -225,7 +225,10 @@ export default async function InterviewerProfilePage({ params }: any) {
         {/* ── RIGHT — sticky slot picker ── */}
         <div className="lg:col-span-2 lg:sticky top-24">
           <SlotPicker
-            interviewer={interviewer}
+            interviewer={{
+              ...interviewer,
+              bookingsAsInterviewer: upcomingBookings  
+            }}
             userCredits={dbUser.credits}
           />
         </div>

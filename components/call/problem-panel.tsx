@@ -54,7 +54,7 @@ export function ProblemPanel({ isInterviewer }: Props) {
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#0f0f11] border border-white/10 rounded-2xl overflow-hidden">
+    <div className="flex flex-col h-full bg-[#0f0f11] border border-white/10 overflow-hidden ">
       <div className="flex items-center gap-2 px-4 py-2.5 border-b border-white/8">
         <BookOpen size={14} className="text-amber-400" />
         <span className="text-xs font-semibold text-stone-400 tracking-wide uppercase">
