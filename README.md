@@ -5,7 +5,7 @@
 ### Book 1:1 mock interviews with senior engineers. Get AI-powered feedback. Land your dream job.
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-ai--interview--lilac--nine.vercel.app-amber?style=for-the-badge&logo=vercel&logoColor=white)](https://ai-interview-lilac-nine.vercel.app)
-[![Next.js](https://img.shields.io/badge/Next.js%2015-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org)
+[![Next.js](https://img.shields.io/badge/Next.js%2016-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://typescriptlang.org)
 [![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white)](https://prisma.io)
 
@@ -28,7 +28,7 @@
 > ![Video Call](public/screenshots/call.png)
 
 > **Live Code Editor**
-> ![Video Call](public/screenshots/call_2.png)
+> ![Code Editor](public/screenshots/call_2.png)
 
 ---
 
@@ -63,6 +63,14 @@ Test accounts:
 - 💰 **Earn credits per session** — withdraw earnings to your account
 - 📊 **Earnings dashboard** — track sessions, credits earned, and withdrawal history
 
+### Live Code Editor (In-call)
+- 💻 **Real-time collaborative editor** — both participants see code changes instantly, synced via Stream custom events with echo-loop prevention
+- 🐳 **Custom Docker execution engine** — code runs in fully isolated containers with memory, CPU, and network limits (see [Execution Server](#-execution-server))
+- 🌐 **Multi-language support** — JavaScript, TypeScript, Python, Java, C++
+- 🎨 **Rich VS Code-like theme** — syntax highlighting, bracket colorization, smooth cursor, JetBrains Mono font with ligatures
+- 📋 **Problem panel** — interviewer sets a problem statement that syncs live to the candidate
+- 🔄 **Language switching** — change language mid-session, starter code updates for both participants instantly
+
 ### Platform
 - 🔒 **Security by Arcjet** — bot protection, rate limiting, abuse prevention on every route
 - 📧 **Transactional emails** via Resend — booking confirmations, reminders, receipts
@@ -75,16 +83,38 @@ Test accounts:
 
 | Layer | Technology |
 |-------|-----------|
-| **Framework** | Next.js 15 (App Router) |
+| **Framework** | Next.js 16 (App Router) |
 | **Language** | TypeScript |
 | **Database** | PostgreSQL via Prisma ORM |
 | **Auth & Billing** | Clerk |
 | **Video Calls** | Stream Video SDK |
+| **Real-time Chat** | Stream Chat SDK |
+| **Code Editor** | Monaco Editor |
+| **Code Execution** | Custom Docker execution server |
 | **AI Feedback** | Google Gemini API |
 | **Email** | Resend + React Email |
 | **Security** | Arcjet |
 | **UI** | Tailwind CSS + shadcn/ui |
 | **Deployment** | Vercel |
+
+---
+
+## 🐳 Execution Server
+
+The live code editor runs code in **fully sandboxed Docker containers** — not a third-party API. Each submission spins up a fresh container, executes the code, captures stdout/stderr, and destroys the container automatically. This is the same architecture used by platforms like LeetCode and HackerRank.
+
+| Protection | Detail |
+|---|---|
+| Network isolation | `NetworkMode: none` — zero internet access inside containers |
+| Memory limit | 128MB RAM per container |
+| CPU limit | 50% CPU quota |
+| Timeout | 10 second limit — kills infinite loops |
+| Auto cleanup | Container destroyed immediately after execution |
+| API key auth | Only authenticated clients can call the server |
+
+> 📦 **[View the Execution Server Repository →](https://github.com/lazytech614/ai-intereview-execution-server)**
+
+The execution server is a separate Node.js + Fastify service that must be running alongside this app. See the repo for full setup and deployment instructions.
 
 ---
 
@@ -96,6 +126,7 @@ Test accounts:
 │   ├── appointments.ts
 │   ├── booking.ts
 │   ├── call.ts
+│   ├── code.ts
 │   └── dashboard.ts
 │   └── explore.ts
 │   └── onboarding.ts
@@ -111,6 +142,7 @@ Test accounts:
 │   |── page.tsx          # Landing page
 ├── components/
 │   ├── appointments/     # Appointment cards, feedback modal
+│   ├── call/             # Video call UI, code editor, problem panel, AI questions
 │   ├── dashboard/        # Earnings, availability, appointments sections
 │   ├── global/           # Shared UI: page header, confirm dialog
 │   └── ui/               # shadcn/ui primitives
@@ -128,6 +160,7 @@ Test accounts:
 
 - Node.js 18+
 - PostgreSQL database (local or hosted, e.g. Supabase / Neon)
+- Docker Desktop (required for the code execution server)
 - Accounts for: Clerk, Stream, Google AI Studio, Resend, Arcjet
 
 ### 1. Clone the repo
@@ -140,10 +173,8 @@ npm install
 
 ### 2. Set up environment variables
 
-Copy the example file and fill in your keys:
-
 ```bash
-cp .env.example .env.local
+cp .env.example .env
 ```
 
 See [Environment Variables](#-environment-variables) below for details on each key.
@@ -155,7 +186,11 @@ npx prisma migrate dev
 npx prisma generate
 ```
 
-### 4. Run the dev server
+### 4. Set up the execution server
+
+The code editor requires the execution server to be running locally (or deployed). Follow the setup instructions in the **[execution server repo](https://github.com/lazytech614/ai-intereview-execution-server)**, then set `EXECUTION_SERVER_URL` and `EXECUTION_SERVER_API_KEY` in your `.env`.
+
+### 5. Run the dev server
 
 ```bash
 npm run dev
@@ -167,33 +202,41 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## 🔑 Environment Variables
 
-Create a `.env.local` file in the root with the following:
+Create a `.env` file in the root:
 
 ```env
+# Clerk
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_test_"
 CLERK_SECRET_KEY="sk_test_"
 
-DATABASE_URL="postgresql://postgres.lapwgxhepzmekbjwhund:<Your_Password>@aws-1-ap-south-1.pooler.supabase.com:6543/postgres?pgbouncer=true"
+# Database
+DATABASE_URL="postgresql://..."
+DIRECT_URL="postgresql://..."
 
-DIRECT_URL="postgresql://postgres.lapwgxhepzmekbjwhund:<Your_Password>@aws-1-ap-south-1.pooler.supabase.com:5432/postgres"
-
+# Arcjet
 ARCJET_KEY="ajkey_"
 ARCJET_ENV="development"
 
-NEXT_PUBLIC_STREAM_API_KEY="pfr__"
-STREAM_API_SECRET="b3xu2uj3xt4fe__"
+# Stream
+NEXT_PUBLIC_STREAM_API_KEY=""
+STREAM_API_SECRET=""
 
-GEMINI_API_KEY="AIza___"
+# Gemini
+GEMINI_API_KEY=""
 
+# App
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
 
-RESEND_API_KEY="re__"
+# Resend
+RESEND_API_KEY="re_"
 
-ADMIN_EMAIL = "demoadmin@gmail.com";
+# Admin
+ADMIN_EMAIL="demoadmin@gmail.com"
 ADMIN_PAYOUT_PASSWORD="demopassword"
 
+# Execution Server (https://github.com/lazytech614/ai-intereview-execution-server)
 EXECUTION_SERVER_URL="http://localhost:3001"
-EXECUTION_SERVER_API_KEY="set_your_secret_key"
+EXECUTION_SERVER_API_KEY="your_secret_key"
 ```
 
 ---
@@ -203,12 +246,12 @@ EXECUTION_SERVER_API_KEY="set_your_secret_key"
 Key models:
 
 ```
-User           — Profile, role (interviewer / interviewee), credits
-Slot           — Availability slots set by interviewers  
-Booking        — A confirmed session linking a slot + interviewee
-Feedback       — AI-generated post-session feedback tied to a booking
-Message        — Chat messages between interviewer and interviewee
-WithdrawalRequest — Interviewer credit withdrawal records
+User                — Profile, role (interviewer / interviewee), credits
+Slot                — Availability slots set by interviewers
+Booking             — A confirmed session linking a slot + interviewee
+Feedback            — AI-generated post-session feedback tied to a booking
+Message             — Chat messages between interviewer and interviewee
+WithdrawalRequest   — Interviewer credit withdrawal records
 ```
 
 Run `npx prisma studio` to browse your data locally.
@@ -221,19 +264,23 @@ The app is deployed on **Vercel**. To deploy your own instance:
 
 1. Push to GitHub
 2. Import the repo at [vercel.com/new](https://vercel.com/new)
-3. Add all environment variables from `.env.local` in the Vercel dashboard
+3. Add all environment variables in the Vercel dashboard
 4. Set `NEXT_PUBLIC_APP_URL` to your Vercel deployment URL
 5. Run database migrations: `npx prisma migrate deploy`
+6. Deploy the [execution server](https://github.com/lazytech614/ai-intereview-execution-server) to a VPS and update `EXECUTION_SERVER_URL` in Vercel env vars
+
+> **Note:** The execution server requires a VPS with Docker installed (DigitalOcean, Oracle Cloud Free Tier, etc.). It cannot be deployed to Vercel or other serverless platforms.
 
 ---
 
 ## 🔮 Roadmap
 
+- [ ] AI solo mock interview mode (no human required)
+- [ ] Post-interview AI report emailed after every session
+- [ ] Resume-based question generation
+- [ ] Collaborative whiteboard for system design rounds
 - [ ] Calendar sync (Google Calendar / iCal export)
-- [ ] Interviewer public profile pages
 - [ ] Referral system
-- [ ] Mobile app (React Native)
-- [ ] Admin dashboard for platform analytics
 
 ---
 
@@ -257,6 +304,7 @@ git commit -m "feat: add calendar sync"
   <p>Made with ❤️ by <a href="https://github.com/lazytech614">Rupanjan</a></p>
   <p>
     <a href="https://ai-interview-lilac-nine.vercel.app">Live Demo</a> ·
+    <a href="https://github.com/lazytech614/ai-intereview-execution-server">Execution Server</a> ·
     <a href="https://github.com/lazytech614/ai-interview/issues">Report Bug</a> ·
     <a href="https://github.com/lazytech614/ai-interview/issues">Request Feature</a>
   </p>
