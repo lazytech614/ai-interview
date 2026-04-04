@@ -330,3 +330,79 @@ export const getWithdrawalHistory = async() => {
         throw new Error("Something went wrong getting withdrawal history")
     }
 }
+
+export const updateInterviewerProfile = async (data: any) => {
+  try {
+    const {userId} = await auth()
+    if(!userId) throw new Error("Unauthorized")
+
+    const user = await prisma.user.findUnique({
+        where: {
+            clerkUserId: userId
+        }
+    })
+    if(!user) throw new Error("User not found")
+    if(user.role !== "INTERVIEWER") throw new Error("Only interviewers can update profile")
+
+    const {
+      bio,
+      title,
+      company,
+      yearsExp,
+      categories,
+      sessionRates
+    } = data
+
+    if(!bio || !title || !company || !yearsExp || !categories?.length || !sessionRates?.length) throw new Error("Missing required fields")
+    if (sessionRates[45] !== 1) throw new Error("45 min must be 1 credit")
+    if (![1, 2, 3].includes(sessionRates[60])) throw new Error("60 min must be 1, 2, or 3 credits")
+    if (![1, 2, 3, 4, 5].includes(sessionRates[90])) throw new Error("90 min must be 1–5 credits")
+
+    const rates = [
+      { duration: 45, credits: sessionRates[45] },
+      { duration: 60, credits: sessionRates[60] },
+      { duration: 90, credits: sessionRates[90] }
+    ]
+
+    await prisma.$transaction(async (tx) => {
+      await tx.user.update({
+        where: {
+          id: user.id
+        },
+        data: {
+          bio,
+          title,
+          company,
+          yearsExp,
+          categories
+        }
+      })
+
+      const rates = [
+        { duration: 45, credits: sessionRates[45] },
+        { duration: 60, credits: sessionRates[60] },
+        { duration: 90, credits: sessionRates[90] }
+      ]
+
+      for (const { duration, credits } of rates) {
+        await tx.sessionRate.update({
+          where: {
+            userId_duration: {
+              userId: user.id,
+              duration
+            }
+          },
+          data: {
+            credits
+          }
+        })
+      }
+    })
+    
+    revalidatePath("/dashboard")
+    return { success: true }
+  }catch(err) {
+    console.error("SOMETHING WENT WRONG UPDATING INTERVIEWER PROFILE", err)
+    throw new Error("Something went wrong updating interviewer profile")
+  }
+}
