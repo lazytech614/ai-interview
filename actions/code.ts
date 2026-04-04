@@ -45,11 +45,12 @@ export async function executeCodeAction({
       stderr: "",
       stdout: data.output || "",
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("CODE EXECUTION ERROR:", error);
+
     return {
       success: false,
-      error: error?.message || "Execution failed",
+      error: error instanceof Error ? error.message : "Execution failed",
     };
   }
 }

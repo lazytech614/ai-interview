@@ -1,5 +1,6 @@
 "use server";
 
+import { CategoryType } from "@/lib/data";
 import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
@@ -20,7 +21,7 @@ const CATEGORY_PROMPTS = {
     "React Native, iOS/Android, performance, offline support, app lifecycle",
 };
 
-export const generateInterviewQuestions = async ({category}: any) => {
+export const generateInterviewQuestions = async ({category}: CategoryType[keyof CategoryType]) => {
     try {
         const {userId} = await auth()
         if(!userId) throw new Error("Unauthorized")

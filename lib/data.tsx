@@ -136,6 +136,8 @@ export const CATEGORIES: {
   { value: "MOBILE", label: "Mobile" },
 ];
 
+export type CategoryType = InterviewCategory | null;
+
 export const CATEGORY_LABEL = {
   FRONTEND: "Frontend",
   BACKEND: "Backend",

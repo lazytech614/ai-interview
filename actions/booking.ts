@@ -296,7 +296,11 @@ export const bookSlot = async ({
 
     }catch(err) {
         console.error("SOMETHING WENT WRONG WHILE BOOKING SLOT", err)
-        throw new Error("Something went wrong while booking slot", (err as any).message)
+        throw new Error(
+            `Something went wrong while booking slot: ${
+                err instanceof Error ? err.message : "Unknown error"
+            }`
+        );
     }
 };
 
@@ -405,8 +409,9 @@ export const cancelSlot = async (bookingId: string) => {
       console.error("TRANSACTION FAILED:", err);
       throw new Error("Failed to cancel booking");
     }
-  } catch (err: any) {
-    console.error("CANCEL SLOT ERROR:", err);
-    throw new Error(err.message || "Something went wrong");
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Unknown error";
+    console.log(message);
+    throw new Error(message);
   }
 };

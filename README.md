@@ -27,6 +27,9 @@
 > **Live Video Call**
 > ![Video Call](public/screenshots/call.png)
 
+> **Live Code Editor**
+> ![Video Call](public/screenshots/call_2.png)
+
 ---
 
 ## 🚀 Live Demo
@@ -167,36 +170,30 @@ Open [http://localhost:3000](http://localhost:3000).
 Create a `.env.local` file in the root with the following:
 
 ```env
-# ── Database ──────────────────────────────────────────
-DATABASE_URL="postgresql://user:password@localhost:5432/prept"
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_test_"
+CLERK_SECRET_KEY="sk_test_"
 
-# ── Clerk (Auth + Billing) ────────────────────────────
-# https://dashboard.clerk.com
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
-CLERK_SECRET_KEY=sk_test_...
-NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
-NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+DATABASE_URL="postgresql://postgres.lapwgxhepzmekbjwhund:<Your_Password>@aws-1-ap-south-1.pooler.supabase.com:6543/postgres?pgbouncer=true"
 
-# ── Stream (Video Calls + Chat) ───────────────────────
-# https://getstream.io/dashboard
-NEXT_PUBLIC_STREAM_API_KEY=...
-STREAM_SECRET_KEY=...
+DIRECT_URL="postgresql://postgres.lapwgxhepzmekbjwhund:<Your_Password>@aws-1-ap-south-1.pooler.supabase.com:5432/postgres"
 
-# ── Google Gemini (AI Feedback) ───────────────────────
-# https://aistudio.google.com/app/apikey
-GEMINI_API_KEY=...
+ARCJET_KEY="ajkey_"
+ARCJET_ENV="development"
 
-# ── Resend (Emails) ───────────────────────────────────
-# https://resend.com/api-keys
-RESEND_API_KEY=re_...
-RESEND_FROM_EMAIL=noreply@yourdomain.com
+NEXT_PUBLIC_STREAM_API_KEY="pfr__"
+STREAM_API_SECRET="b3xu2uj3xt4fe__"
 
-# ── Arcjet (Security) ─────────────────────────────────
-# https://app.arcjet.com
-ARCJET_KEY=ajkey_...
+GEMINI_API_KEY="AIza___"
 
-# ── App ───────────────────────────────────────────────
-NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+
+RESEND_API_KEY="re__"
+
+ADMIN_EMAIL = "demoadmin@gmail.com";
+ADMIN_PAYOUT_PASSWORD="demopassword"
+
+EXECUTION_SERVER_URL="http://localhost:3001"
+EXECUTION_SERVER_API_KEY="set_your_secret_key"
 ```
 
 ---
