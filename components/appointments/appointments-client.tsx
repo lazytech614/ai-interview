@@ -18,7 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-type Tab = "upcoming" | "past" | "all";
+type Tab = "all" | "upcoming" | "past";
 type StatusFilter = "ALL" | "SCHEDULED" | "COMPLETED" | "CANCELLED";
 
 const STATUS_OPTIONS: { label: string; value: StatusFilter }[] = [
@@ -29,7 +29,7 @@ const STATUS_OPTIONS: { label: string; value: StatusFilter }[] = [
 ];
 
 export function AppointmentsClient({ appointments }: { appointments: any[] }) {
-  const [tab, setTab] = useState<Tab>("upcoming");
+  const [tab, setTab] = useState<Tab>("all");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
 
@@ -124,9 +124,9 @@ export function AppointmentsClient({ appointments }: { appointments: any[] }) {
       {/* ── Tabs ── */}
       <div className="flex items-center gap-1 p-1 bg-white/3 border border-white/8 rounded-xl w-fit">
         {[
+          { key: "all", label: "All", count: appointments.length },
           { key: "upcoming", label: "Upcoming", count: upcoming.length },
           { key: "past", label: "Past", count: past.length },
-          { key: "all", label: "All", count: appointments.length },
         ].map(({ key, label, count }) => (
           <button
             key={key}

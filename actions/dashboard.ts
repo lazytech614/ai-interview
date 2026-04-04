@@ -10,7 +10,7 @@ import { request } from "@arcjet/next";
 import { WithdrawalRequestEmail } from "@/emails/WithdrawalRequestEmail";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const ADMIN_EMAIL = "derupanjan2021@gmail.com";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL!;
 
 const withdrawalLimiter = createRateLimitor({
   refillRate: 1,
