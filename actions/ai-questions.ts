@@ -21,7 +21,7 @@ const CATEGORY_PROMPTS = {
     "React Native, iOS/Android, performance, offline support, app lifecycle",
 };
 
-export const generateInterviewQuestions = async ({category}: CategoryType[keyof CategoryType]) => {
+export const generateInterviewQuestions = async ({category}: any) => {
     try {
         const {userId} = await auth()
         if(!userId) throw new Error("Unauthorized")
