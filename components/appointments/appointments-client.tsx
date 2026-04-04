@@ -200,7 +200,7 @@ export function AppointmentsClient({ appointments }: { appointments: any[] }) {
         )}
       </div>
 
-        {paginated.length === 0 &&  (search || statusFilter !== "ALL") && (
+      {paginated.length === 0 &&  (search || statusFilter !== "ALL") && (
           <div className="py-20 text-center">
             <p className="text-stone-600 text-sm">
               No interviewers match your search.
@@ -212,9 +212,44 @@ export function AppointmentsClient({ appointments }: { appointments: any[] }) {
               Clear Filters
             </Button>
           </div>
-        )}
+      )}
 
       {/* ── Results ── */}
+      {paginated.length === 0 && tab === "upcoming" && (!search && statusFilter === "ALL") && (
+        <div className="flex flex-col items-center justify-center py-28 gap-5 text-center">
+          <span className="w-16 h-16 rounded-2xl bg-amber-400/10 border border-amber-400/20 flex items-center justify-center">
+            <CalendarDays size={28} className="text-amber-400" />
+          </span>
+          <div>
+            <p className="text-base text-stone-400 font-light">
+              No upcoming appointments
+            </p>
+            <p className="text-sm text-stone-600 mt-1">
+              Browse expert interviewers and book your first session.
+            </p>
+          </div>
+          <Button variant="gold" asChild>
+            <Link href="/explore">Browse interviewers →</Link>
+          </Button>
+        </div>
+      )}
+
+      {paginated.length === 0 && tab === "past" && (!search && statusFilter === "ALL") && (
+        <div className="flex flex-col items-center justify-center py-28 gap-5 text-center">
+          <span className="w-16 h-16 rounded-2xl bg-amber-400/10 border border-amber-400/20 flex items-center justify-center">
+            <CalendarDays size={28} className="text-amber-400" />
+          </span>
+          <div>
+            <p className="text-base text-stone-400 font-light">
+              No past appointments
+            </p>
+            <p className="text-sm text-stone-600 mt-1">
+              Check back later to see your past sessions.
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {paginated.map((b) => (
           <AppointmentCard

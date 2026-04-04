@@ -126,13 +126,12 @@ export function FeedbackModal({
 
               <div className="flex flex-col gap-2">
                 {feedback.strengths?.map((s: string, i: number) => (
-                  <Badge
+                  <div
                     key={i}
-                    variant="outline"
-                    className="justify-start border-green-500/20 text-green-400 whitespace-normal"
+                    className="justify-start border rounded-xl p-2 border-green-500/20 text-green-400 whitespace-normal"
                   >
                     ✓ {s}
-                  </Badge>
+                  </div>
                 ))}
               </div>
             </div>
@@ -147,13 +146,12 @@ export function FeedbackModal({
 
               <div className="flex flex-col gap-2">
                 {feedback.improvements?.map((imp: any, i: number) => (
-                  <Badge
+                  <div
                     key={i}
-                    variant="outline"
-                    className="justify-start border-red-500/20 text-red-400 whitespace-normal"
+                    className="justify-start border rounded-xl p-2 border-red-500/20 text-red-400 whitespace-normal"
                   >
                     ✓ {imp}
-                  </Badge>
+                  </div>
                 ))}
               </div>
             </div>
