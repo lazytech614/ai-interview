@@ -2,12 +2,9 @@
 
 import { GoldTitle, GrayTitle, SectionLabel } from "@/components/global/reusables"
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { CATEGORIES, ONBOARDING_ROLES, YEARS_OPTIONS } from "@/lib/data";
+import { ONBOARDING_ROLES } from "@/lib/data";
 import { useEffect, useState } from "react";
 import { InterviewCategory } from "@/lib/generated/prisma/client";
-import { Textarea } from "@/components/ui/textarea";
 import { useRouter } from "next/navigation";
 import useFetch from "@/hooks/use-fetch";
 import { completeOnboarding } from "@/actions/onboarding";
@@ -72,9 +69,9 @@ const OnboardingPage = () => {
             toast.success("Onboarding successful")
             
             if(role === "INTERVIEWER") {
-                window.location.href = "/dashboard" 
+                router.push("/dashboard") 
             } else {
-                router.replace("/explore")
+                router.push("/explore")
             }
         }
     }, [data, loading, role, router])
@@ -152,7 +149,7 @@ const OnboardingPage = () => {
                         ? "Setting up your account..."
                         : role === "INTERVIEWER"
                         ? "Create interviewer profile"
-                        : "Go to dashboard"}
+                        : "Enroll as an interviewee"}
                     </Button>
                 </div>
             )}

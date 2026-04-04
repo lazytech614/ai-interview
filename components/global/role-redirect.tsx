@@ -11,23 +11,38 @@ export default function RoleRedirect({ role }: any) {
   const router = useRouter();
 
   useEffect(() => {
-    if (role === "UNASSIGNED" && pathname !== "/onboarding")
+    if (!role) return; 
+
+    if (role === "UNASSIGNED" && pathname !== "/onboarding") {
       router.replace("/onboarding");
-    // Already onboarded users shouldn't be on /onboarding
-    if (role === "INTERVIEWER" && pathname.startsWith("/onboarding"))
+      return;
+    }
+
+    if (role === "INTERVIEWER" && pathname.startsWith("/onboarding")) {
       router.replace("/dashboard");
-    if (role === "INTERVIEWEE" && pathname.startsWith("/onboarding"))
+      return;
+    }
+
+    if (role === "INTERVIEWEE" && pathname.startsWith("/onboarding")) {
       router.replace("/explore");
+      return;
+    }
+
     if (
       role === "INTERVIEWER" &&
       INTERVIEWER_ONLY.some((p) => pathname.startsWith(p))
-    )
+    ) {
       router.replace("/dashboard");
+      return;
+    }
+
     if (
       role === "INTERVIEWEE" &&
       INTERVIEWEE_ONLY.some((p) => pathname.startsWith(p))
-    )
+    ) {
       router.replace("/appointments");
+      return;
+    }
   }, [role, pathname, router]);
 
   return null;

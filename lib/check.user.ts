@@ -45,7 +45,7 @@ export const checkUser = async () => {
 
         if(loggedUser) {
             if(shouldAllocateCredits(loggedUser, currentPlan)) {
-                await prisma.user.update({
+                const updatedUser = await prisma.user.update({
                     where: {
                         clerkUserId: userId
                     },
@@ -55,6 +55,8 @@ export const checkUser = async () => {
                         creditsLastAllocatedAt: new Date()
                     }
                 })
+
+                return updatedUser
             }
 
             return loggedUser

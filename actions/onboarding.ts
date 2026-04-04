@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
+import { revalidatePath } from "next/cache";
 
 export const completeOnboarding = async (data: any) => {
     try {
@@ -101,6 +102,7 @@ export const completeOnboarding = async (data: any) => {
             }
         })
 
+        revalidatePath("/", "layout");
         return { success: true }
 
     } catch (err) {

@@ -113,15 +113,6 @@ export default function LandingPage() {
 
         {/* RIGHT */}
         <div className="col-span-full lg:col-span-2 flex items-center justify-center lg:justify-start mt-12 lg:mt-0 lg:rotate-3">
-          {/* <Image
-            src="/hero.png"
-            alt="Hero illustration"
-            width={600}
-            height={400}
-            className="w-full max-w-md sm:max-w-lg lg:max-w-none h-auto"
-            priority
-          /> */}
-
           <CodeDemo duration={30000} writing />
         </div>
       </section>
@@ -308,16 +299,6 @@ export default function LandingPage() {
         </div>
 
         <PricingSection />
-
-        {/* <PricingTable checkoutProps={{
-          appearance: {
-            elements: {
-              drawerRoot: {
-                zIndex: 20000
-              }
-            }
-          }
-        }} /> */}
       </section>
 
       {/* CTA */}

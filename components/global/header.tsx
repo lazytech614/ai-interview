@@ -9,8 +9,7 @@ import CreditButton from "./credit-button"
 
 const Header = async () => {
     const user = await checkUser()
-
-
+    
   return (
     <header className="fixed top-0 inset-x-0 z-50 flex justify-between items-center py-3 border-b border-white/20 backdrop-blur-xl w-full">
         <div className="max-w-350 mx-auto px-4 sm:px-8 flex justify-between items-center w-full">

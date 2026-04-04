@@ -4,7 +4,7 @@ import PageHeader from "@/components/global/reusables"
 
 const ExplorePage = async() => {
 
-    const interviewers = await getInterviewers()
+  const interviewers = await getInterviewers()
 
   return (
     <div className="min-h-screen ">
