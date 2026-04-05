@@ -17,6 +17,7 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import AlertBox from "../global/alert-box";
 
 type Tab = "all" | "upcoming" | "past";
 type StatusFilter = "ALL" | "SCHEDULED" | "COMPLETED" | "CANCELLED";
@@ -199,6 +200,12 @@ export function AppointmentsClient({ appointments }: { appointments: any[] }) {
           </button>
         )}
       </div>
+
+      <AlertBox 
+        title="Best experienced on laptop/desktop" 
+        description="For the full interview experience — video, code editor, and chat — we recommend joining from a laptop or desktop." 
+        className="sm:hidden"
+      />
 
       {paginated.length === 0 &&  (search || statusFilter !== "ALL") && (
           <div className="py-20 text-center">

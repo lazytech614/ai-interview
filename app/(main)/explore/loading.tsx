@@ -8,9 +8,9 @@ export default function Loading() {
       <div className="border-b border-white/5 bg-black/60 backdrop-blur-sm px-8 py-10">
         <div className="max-w-6xl mx-auto flex items-start justify-between">
           <div className="flex flex-col gap-4">
-            <div className="h-5 w-24 rounded-full bg-white/5 animate-pulse" />
-            <div className="h-12 w-120 rounded-xl bg-white/[0.07] animate-pulse" />
-            <div className="h-5 w-48 rounded-full bg-white/5 animate-pulse" />
+            <div className="h-5 w-16 sm:w-24 rounded-full bg-white/5 animate-pulse" />
+            <div className="h-12 w-72 sm:w-120 rounded-xl bg-white/[0.07] animate-pulse" />
+            <div className="h-5 w-32 sm:w-48 rounded-full bg-white/5 animate-pulse" />
           </div>
         </div>
       </div>

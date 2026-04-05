@@ -199,30 +199,33 @@ export function AppointmentCard({ booking, mode, isPast = false }: any) {
           </div>
         )}
 
+        {/* BUTTONS GROUP */}
         {(streamCallId || recordingUrl || feedback) && (
-          <div className="flex flex-col sm:flex-row items-start justify-between sm:items-center gap-2 flex-wrap pt-1">
+          <div className="flex flex-col sm:flex-row items-start justify-between gap-2 flex-wrap pt-1">
+            {/* JOIN CALL BUTTON */}
             {!isPast && streamCallId && isUpcoming && (
               <Button
                 variant="gold"
                 size="sm"
                 className="gap-2"
-                disabled={canJoinCall}
+                disabled={!canJoinCall}
                 asChild={canJoinCall}
               >
-                {!canJoinCall ? (
+                {canJoinCall ? (
                   <Link href={`/call/${streamCallId}`} className="flex items-center gap-1">
                     <Video size={13} />
                     Join call
                   </Link>
                 ) : (
-                  <>
+                  <Button>
                     <Video size={13} />
                     Join in 15 min window
-                  </>
+                  </Button>
                 )}
               </Button>
             )}
 
+            {/* DATA ANALYTICS BUTTON */}
             <div className="flex items-center gap-x-2">
               {recordingUrl && has?.({ plan: "pro" }) && (
                 <Button variant="outline" size="sm" className="gap-2" asChild>
@@ -262,11 +265,11 @@ export function AppointmentCard({ booking, mode, isPast = false }: any) {
               )}
             </div>
 
-
+            {/* CANCELATION BUTTON  */}
             {mode === "interviewee" &&
               status === "SCHEDULED" &&
               !isPast && (
-                <>
+                <div>
                   {/* Cancel Button */}
                   <Button
                     variant="destructive"
@@ -314,7 +317,7 @@ export function AppointmentCard({ booking, mode, isPast = false }: any) {
                       }
                     }}
                   />
-                </>
+                </div>
             )}
           </div>
         )}
