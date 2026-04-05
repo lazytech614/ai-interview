@@ -8,6 +8,8 @@ import Footer from "@/components/global/footer";
 import { dark } from "@clerk/themes";
 import { Toaster } from "sonner";
 import ConditionalLayout from "@/components/global/conditional-layout";
+import { SuggestionWidget } from "@/components/global/suggestion-widget";
+import { checkUser } from "@/lib/check.user";
 
 const lora = Lora({
   subsets: ["latin"],
@@ -37,11 +39,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+  const user = await checkUser();
+
   return (
     <html
       lang="en"
@@ -64,6 +69,7 @@ export default function RootLayout({
             <main className="min-h-screen">
               <ConditionalLayout header={<Header />} footer={<Footer />}>
                 {children}
+                <SuggestionWidget userId={user?.id} />
               </ConditionalLayout>
             </main>
           </ThemeProvider>

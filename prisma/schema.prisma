@@ -60,6 +60,12 @@ enum TransactionType {
   BOOKING_REFUND
 }
 
+enum SuggestionsType {
+  BUG
+  FEATURE
+  OTHER
+}
+
 // ─── USER ────────────────────────────────────────────────
 
 model User {
@@ -199,4 +205,13 @@ model Payout {
 
   @@index([status, createdAt])
   @@index([interviewerId, status])
+}
+
+model Suggestions {
+  id        String   @id @default(cuid())
+  type      SuggestionsType   // "bug" | "feature" | "other"
+  message   String
+  page      String?
+  userId    String?
+  createdAt DateTime @default(now())
 }

@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 const sections = [
   {
-    num: "01",
+    num: "1",
     title: "Acceptance of Terms",
     content: (
       <p className="body-text">
@@ -20,7 +20,7 @@ const sections = [
     ),
   },
   {
-    num: "02",
+    num: "2",
     title: "Account Registration",
     content: (
       <p className="body-text">
@@ -32,7 +32,7 @@ const sections = [
     ),
   },
   {
-    num: "03",
+    num: "3",
     title: "Credit System & Payments",
     content: (
       <>
@@ -57,7 +57,7 @@ const sections = [
     ),
   },
   {
-    num: "04",
+    num: "4",
     title: "Session Conduct",
     content: (
       <>
@@ -85,7 +85,7 @@ const sections = [
     ),
   },
   {
-    num: "05",
+    num: "5",
     title: "Intellectual Property",
     content: (
       <p className="body-text">
@@ -97,7 +97,7 @@ const sections = [
     ),
   },
   {
-    num: "06",
+    num: "6",
     title: "Prohibited Uses",
     content: (
       <p className="body-text">
@@ -108,7 +108,7 @@ const sections = [
     ),
   },
   {
-    num: "07",
+    num: "7",
     title: "Termination",
     content: (
       <p className="body-text">
@@ -119,7 +119,7 @@ const sections = [
     ),
   },
   {
-    num: "08",
+    num: "8",
     title: "Limitation of Liability",
     content: (
       <p className="body-text">
@@ -166,11 +166,8 @@ export default function TermsPage() {
         {/* Sections */}
         {sections.map((section) => (
           <section key={section.num} className="mt-10">
-            <span className="text-[12px] font-medium uppercase tracking-[0.08em] text-amber-400 block mb-1">
-              {section.num}
-            </span>
             <h2 className="font-serif text-[22px] font-normal text-[#F0EDE8] mb-3">
-              {section.title}
+              {section.num}. {section.title}
             </h2>
             {section.content}
           </section>

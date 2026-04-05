@@ -8,7 +8,6 @@ import { render } from "@react-email/render";
 import { createRateLimitor, checkRateLimit } from "@/lib/arcjet";
 import { request } from "@arcjet/next";
 import { WithdrawalRequestEmail } from "@/emails/WithdrawalRequestEmail";
-import { FormData } from "@/components/dashboard/types/types";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL!;

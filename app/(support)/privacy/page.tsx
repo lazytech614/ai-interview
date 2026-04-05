@@ -40,12 +40,11 @@ const dataUsageTable = [
 ];
 
 const providers = [
-  { name: "Clerk", role: "Authentication and user management" },
-  { name: "Stripe", role: "Payment processing" },
+  { name: "Clerk", role: "Authentication, user management and billing" },
   { name: "Stream", role: "Video calls and persistent chat" },
   { name: "Google (Gemini)", role: "AI feedback generation" },
   { name: "Arcjet", role: "Security and rate limiting" },
-  { name: "Prisma / Neon", role: "Database infrastructure" },
+  { name: "Prisma / Supabase", role: "Database infrastructure" },
 ];
 
 export default function PrivacyPage() {
@@ -80,7 +79,7 @@ export default function PrivacyPage() {
               "Account data: Name, email address, and profile photo (via Clerk authentication).",
               "Session data: Interview recordings, chat messages, AI feedback reports, and scheduling data.",
               "Usage data: Pages visited, features used, session durations, and error logs.",
-              "Payment data: Billing information processed and stored securely by Stripe. We never store card numbers.",
+              "Payment data: Billing information processed and stored securely by Clerk. We never store card numbers.",
               "Device data: IP address, browser type, and operating system for security and fraud prevention.",
             ].map((item) => (
               <li key={item} className="text-[14.5px] text-[#B0ADB8] leading-[1.8]">
