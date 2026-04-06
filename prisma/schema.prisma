@@ -21,6 +21,7 @@ enum BookingStatus {
   CANCELLED
   PROCESSING
   UPCOMING
+  EXPIRED
 }
 
 enum AvailabilityStatus {
